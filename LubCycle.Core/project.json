@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0-*",
+  
+
+  "dependencies": {
+    "Microsoft.NETCore.App": {
+      "type": "platform",
+      "version": "1.0.0-rc2-3002702"
+    },
+    "Newtonsoft.Json": "8.0.3",
+    "System.Net.Http": "4.0.0",
+    "System.Text.Encoding.CodePages": "4.0.0",
+    "System.Xml.XmlSerializer": "4.0.10"
+  },
+
+  "frameworks": {
+    "netcoreapp1.0": {
+      "imports": "dnxcore50"
+    }
+  }
+}
