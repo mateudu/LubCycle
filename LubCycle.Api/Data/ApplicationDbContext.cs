@@ -17,7 +17,6 @@ namespace LubCycle.Api.Data
         }
 
         public DbSet<TravelDuration> TravelDurations { get; set; }
-        public DbSet<dupa> Dupas { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

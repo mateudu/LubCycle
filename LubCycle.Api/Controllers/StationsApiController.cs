@@ -13,6 +13,7 @@ namespace LubCycle.Api.Controllers
     [Route("api/Stations")]
     public class StationsApiController : Controller
     {
+        [HttpGet]
         public async Task<List<Place>> GetStations()
         {
             await Core.NextBikeHelper.GetNextbikeInfoAsync();

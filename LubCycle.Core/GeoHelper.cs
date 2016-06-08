@@ -10,8 +10,31 @@ namespace LubCycle.Core
 {
     public class GeoHelper
     {
+        // Invoke 'LoadGraph()' method before calling 'GetRoute()'! 
+        //private async Task LoadGraph()
+        //{
+        //    if (Core.GeoHelper.TravelDurations == null || Core.GeoHelper.TravelDurations.Count == 0)
+        //    {
+        //        var obj = _context.TravelDurations.ToList();
+        //        Core.GeoHelper.TravelDurations = obj;
+        //    }
+        //    if (Core.GeoHelper.Stations == null)
+        //    {
+        //        Core.GeoHelper.Stations = await LubCycle.Core.NextBikeHelper.GetStationsAsync(Startup.Configuration["CITY_UIDS"]);
+        //    }
+        //}
+
+        // Calc distance using Geo-coordinates.
         private const double EQuatorialEarthRadius = 6378.1370D;
         private const double D2R = (Math.PI / 180D);
+
+        /// <summary>
+        ///  Returns distance from A to B in km.
+        /// </summary>
+        /// <param name="lat1">Point A - Latitude</param>
+        /// <param name="lng1">Point A - Longitude</param>
+        /// <param name="lat2">Point B - Latitude</param>
+        /// <param name="lng2">Point B - Longitude</param>
         public static double CalcDistance(double lat1, double lng1, double lat2, double lng2)
         {
             double dlong = (lng2 - lng1) * D2R;
@@ -22,18 +45,22 @@ namespace LubCycle.Core
             return d;
         }
 
+        /// <summary>
+        ///  Returns distance between station A and B in km.
+        /// </summary>
+        /// <param name="start">Station A</param>
+        /// <param name="destination">Station B</param>
         public static double CalcDistance(Models.NextBike.Place start, Models.NextBike.Place destination)
         {
             return CalcDistance(start.Lat, start.Lng, destination.Lat, destination.Lng);
         }
-
-
+        
+        // Dijkstra's algorithm graph
         private static List<List<Models.Geo.Edge>> _graph;
         private static Dictionary<string, int> _edges;
         public static List<TravelDuration> TravelDurations;
         public static List<Place> Stations;
         private static bool _isInitialized = false;
-        
         private static void InitializeGraph()
         {
             if (_isInitialized == false)
@@ -72,7 +99,7 @@ namespace LubCycle.Core
             }
         }
 
-        public static List<Place> CalcRoute(string startUid, string destUid)
+        private static List<Place> CalcRoute(string startUid, string destUid)
         {
             InitializeGraph();
             int i, j, k, u, v;
@@ -125,6 +152,79 @@ namespace LubCycle.Core
             }
 
             //return null;
+            return result;
+        }
+
+        /// <summary>
+        ///  Get route from startUid station to destUid station.
+        /// </summary>
+        /// <param name="startUid">Start station Uid</param>
+        /// <param name="destUid">Destination station Uid</param>
+        public static Route GetRoute(string startUid, string destUid)
+        {
+            Route result;
+
+            if (startUid == destUid)
+            {
+                result = new Route()
+                {
+                    Status = RouteStatus.IncorrectArguments,
+                    Message = "'startUid' and 'destUid' cannot be the same."
+                };
+                return result;
+            }
+
+            var startStation = Core.GeoHelper.Stations.FirstOrDefault(x => x.Uid == startUid);
+            var destStation = Core.GeoHelper.Stations.FirstOrDefault(x => x.Uid == destUid);
+
+            if (startStation == null || destStation == null)
+            {
+                result = new Route()
+                {
+                    Status = RouteStatus.IncorrectArguments,
+                    Message = "'startUid'/'destUid' is incorrect."
+                };
+                return result;
+            }
+
+            var stations = CalcRoute(startUid, destUid);
+            double duration = 0, distance = 0;
+
+            for (int i = 1; i < stations.Count; i++)
+            {
+                var el = Core.GeoHelper.TravelDurations.FirstOrDefault(x => 
+                    x.Station1Uid == stations[i - 1].Uid && x.Station2Uid == stations[i].Uid ||
+                    x.Station2Uid == stations[i - 1].Uid && x.Station1Uid == stations[i].Uid);
+                
+                if (el != null)
+                {
+                    duration += el.Duration;
+                    distance += el.Distance;
+                }
+            }
+
+            if (stations.First()!= startStation || stations.Last()!=destStation)
+            {
+                result = new Route()
+                {
+                    Status = RouteStatus.IncorrectArguments,
+                    Message = "Route does not exist."
+                };
+                return result;
+            }
+
+            result = new Route()
+            {
+                Status = RouteStatus.Ok,
+                Message = "OK",
+                Start = startStation,
+                Destination = destStation,
+                Distance = distance,
+                Duration = duration,
+                StartTime = DateTime.Now,
+                EndTime = DateTime.Now.AddSeconds(duration),
+                Stations = stations
+            };
             return result;
         }
     }

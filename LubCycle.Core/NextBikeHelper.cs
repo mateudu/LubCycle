@@ -16,6 +16,10 @@ namespace LubCycle.Core
         {
             _lastResponseTime = new DateTime(2000,1,1);
         }
+
+        /// <summary>
+        ///  Returns NextBike info. Updates every 15 seconds.
+        /// </summary>
         public static async Task<Marker> GetNextbikeInfoAsync()
         {
             if (DateTime.Now - _lastResponseTime > TimeSpan.FromSeconds(15))
@@ -39,6 +43,10 @@ namespace LubCycle.Core
 
         }
 
+        /// <summary>
+        ///  Returns stations in cityUids.
+        /// </summary>
+        /// <param name="cityUid">List of cityUids</param>
         public static async Task<List<Place>> GetStationsAsync(IEnumerable<string> cityUid)
         {
             if (_stations == null)
@@ -48,6 +56,10 @@ namespace LubCycle.Core
             return _stations;
         }
 
+        /// <summary>
+        ///  Returns stations in cityUids.
+        /// </summary>
+        /// <param name="cityUid">CityUids, i.e "1,2,3,4"</param>
         public static async Task<List<Place>> GetStationsAsync(string cityUid)
         {
             return await GetStationsAsync(cityUid.Split(new string[] {","}, StringSplitOptions.RemoveEmptyEntries));

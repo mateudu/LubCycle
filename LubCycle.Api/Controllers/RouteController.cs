@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using LubCycle.Api.Data;
 using LubCycle.Core;
 using LubCycle.Core.Models;
+using LubCycle.Core.Models.Geo;
 using LubCycle.Core.Models.NextBike;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -38,46 +40,19 @@ namespace LubCycle.Api.Controllers
             {
                 Core.GeoHelper.Stations = await LubCycle.Core.NextBikeHelper.GetStationsAsync(Startup.Configuration["CITY_UIDS"]);
             }
-            
         }
 
-        public async Task<IActionResult> GetRoute(string startUid, string destinationUid, int bikes = 1)
+        [HttpGet("{startUid}/{destUid}")]
+        [ProducesResponseType(typeof(Core.Models.Geo.Route),(int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetRoute(string startUid, string destUid)
         {
             // Load travel times between stations
             await LoadGraph();
-            //var nextBikeInfo = await LubCycle.Core.NextBikeHelper.GetNextbikeInfoAsync();
-            
 
-            var startStation = Core.GeoHelper.Stations.FirstOrDefault(x => x.Uid == startUid);
-            var destStation = Core.GeoHelper.Stations.FirstOrDefault(x => x.Uid == destinationUid);
-            if (startStation == null || destStation == null)
-            {
-                return BadRequest(new { error_message = "Incorrect start/destination station uid." });
-            }
+            var result = Core.GeoHelper.GetRoute(startUid, destUid);
 
-            var stations = Core.GeoHelper.CalcRoute(startStation.Uid, destStation.Uid);
-            double duration = 0, distance = 0;
-            for (int i = 1; i < stations.Count; i++)
-            {
-                var el = Core.GeoHelper.TravelDurations.FirstOrDefault(
-                    x => x.Station1Uid == stations[i - 1].Uid && x.Station2Uid == stations[i].Uid);
-                if (el != null)
-                {
-                    duration += el.Duration;
-                    distance += el.Distance;
-                }
-            }
-
-            var result = new Route()
-            {
-                Start = startStation,
-                Destination = destStation,
-                StartTime = DateTime.Now,
-                Stations = stations,
-                EndTime = DateTime.Now.AddSeconds(duration),
-                Distance = distance,
-                Duration = (int)duration
-            };
+            if (result.Status == RouteStatus.IncorrectArguments)
+                return BadRequest(result);
 
             return Ok(result);
         }

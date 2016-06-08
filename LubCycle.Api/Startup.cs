@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using LubCycle.Api.Data;
 using LubCycle.Api.Models;
 using LubCycle.Api.Services;
+using Swashbuckle.SwaggerGen.Generator;
 
 namespace LubCycle.Api
 {
@@ -42,8 +43,8 @@ namespace LubCycle.Api
             // Add framework services.
             services.AddDbContext<ApplicationDbContext>(options =>
                 //options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-                options.UseSqlServer(Configuration.GetConnectionString("AzureSQL")));
-                //options.UseSqlServer(Configuration["APP_DATABASE_CONNECTION_STRING"]));
+                //options.UseSqlServer(Configuration.GetConnectionString("AzureSQL")));
+                options.UseSqlServer(Configuration["APP_DATABASE_CONNECTION_STRING"]));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -54,6 +55,22 @@ namespace LubCycle.Api
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
+
+            // Inject an implementation of ISwaggerProvider with defaulted settings applied
+            services.AddSwaggerGen();
+            services.ConfigureSwaggerGen(options =>
+            {
+                options.SingleApiVersion(new Info()
+                {
+                    Contact = new Contact()
+                    {
+                        Name = "LubCycle",
+                        Email = "kontakt@lubcycle.pl"
+                    },
+                    Version = "v1",
+                    Title = "LubCycle"
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -85,6 +102,12 @@ namespace LubCycle.Api
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint
+            app.UseSwaggerGen();
+
+            // Enable middleware to serve swagger-ui assets (HTML, JS, CSS etc.)
+            app.UseSwaggerUi();
         }
     }
 }

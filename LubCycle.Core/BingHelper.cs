@@ -9,6 +9,10 @@ namespace LubCycle.Core
 {
     public class BingHelper
     {
+        /// <summary>
+        ///  Returns new instance of BingHelper.
+        /// </summary>
+        /// <param name="bingMapsApiKey">Bing Maps API key</param>
         public BingHelper(string bingMapsApiKey)
         {
             this._bingMapsApiKey = bingMapsApiKey;
@@ -16,6 +20,13 @@ namespace LubCycle.Core
 
         private readonly string _bingMapsApiKey;
 
+        /// <summary>
+        ///  Returns directions between point A and B.
+        /// </summary>
+        /// <param name="lat1">Point A - Latitude</param>
+        /// <param name="lng1">Point A - Longitude</param>
+        /// <param name="lat2">Point B - Latitude</param>
+        /// <param name="lng2">Point B - Longitude</param>
         public async Task<Models.BingMaps.RootObject> GetDirectionsAsync(double lat1, double lng1, double lat2, double lng2)
         {
             var client = new HttpClient();
@@ -32,6 +43,11 @@ namespace LubCycle.Core
             return obj;
         }
 
+        /// <summary>
+        ///  Returns directions between station A and B.
+        /// </summary>
+        /// <param name="start">Station A</param>
+        /// <param name="destination">Station B</param>
         public async Task<Models.BingMaps.RootObject> GetDirectionsAsync(Models.NextBike.Place start,
             Models.NextBike.Place destination)
         {

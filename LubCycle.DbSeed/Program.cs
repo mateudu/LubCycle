@@ -31,67 +31,54 @@ namespace LubCycle.DbSeed
                 .Build();
             ConfigureSettings();
 
-            //Task.Run(async () =>
-            //{
-            //    try
-            //    {
-            //        var places = await LubCycle.Core.NextBikeHelper.GetStationsAsync(CityUids);
-            //        var bing = new LubCycle.Core.BingHelper(BingMapsApiKey);
-            //        var db = new AppDatabase();
-            //        int counter = 0;
+            Task.Run(async () =>
+            {
+                try
+                {
+                    var places = await LubCycle.Core.NextBikeHelper.GetStationsAsync(CityUids);
+                    var bing = new LubCycle.Core.BingHelper(BingMapsApiKey);
+                    var db = new AppDatabase();
+                    int counter = 0;
 
-            //        var client = new HttpClient();
-            //        var resource = new LubCycle.Core.Models.BingMaps.Resource();
-            //        for (int i = 0; i < places.Count; i++)
-            //        {
-            //            for (int j = i + 1; j < places.Count; j++)
-            //            {
-            //                if (LubCycle.Core.GeoHelper.CalcDistance(places[i], places[j]) < MaxDistanceSqrt)
-            //                {
-            //                    var response = await bing.GetDirectionsAsync(places[i], places[j]);
-            //                    resource = response.ResourceSets.First().Resources.First();
-            //                    if (resource.TravelDuration < MaxSingleDuration)
-            //                    {
-            //                        Console.WriteLine(places[i].Name+" "+places[j].Name+" "+resource.TravelDistance);
-            //                        db.TravelDurations.Add(new TravelDuration()
-            //                        {
-            //                            Distance = resource.TravelDistance,
-            //                            Duration = (int)resource.TravelDuration,
-            //                            Station1Uid = places[i].Uid,
-            //                            Station2Uid = places[j].Uid
-            //                        });
-            //                        if (counter % 50 == 0)
-            //                        {
-            //                            //Save every 50 entities.
-            //                            //await db.SaveChangesAsync();
-            //                            //Console.WriteLine("================= SAVED " + counter + " ==================");
-            //                        }
-            //                    }
+                    var client = new HttpClient();
+                    var resource = new LubCycle.Core.Models.BingMaps.Resource();
+                    for (int i = 0; i < places.Count; i++)
+                    {
+                        for (int j = i + 1; j < places.Count; j++)
+                        {
+                            if (LubCycle.Core.GeoHelper.CalcDistance(places[i], places[j]) < MaxDistanceSqrt)
+                            {
+                                var response = await bing.GetDirectionsAsync(places[i], places[j]);
+                                resource = response.ResourceSets.First().Resources.First();
+                                if (resource.TravelDuration < MaxSingleDuration)
+                                {
+                                    Console.WriteLine(places[i].Name + " " + places[j].Name + " " + resource.TravelDistance);
+                                    db.TravelDurations.Add(new TravelDuration()
+                                    {
+                                        Distance = resource.TravelDistance,
+                                        Duration = (int)resource.TravelDuration,
+                                        Station1Uid = places[i].Uid,
+                                        Station2Uid = places[j].Uid
+                                    });
+                                    if (counter % 50 == 0)
+                                    {
+                                        //Save every 50 entities.
+                                        //await db.SaveChangesAsync();
+                                        //Console.WriteLine("================= SAVED " + counter + " ==================");
+                                    }
+                                }
 
-            //                }
-            //            }
-            //        }
-            //        //await db.SaveChangesAsync();
-            //    }
-            //    catch (Exception exc)
-            //    {
-            //        Console.WriteLine(exc.Message);
-            //    }
-            //});
-            //Console.WriteLine((double)Int32.MaxValue);
+                            }
+                        }
+                    }
+                    //await db.SaveChangesAsync();
+                }
+                catch (Exception exc)
+                {
+                    Console.WriteLine(exc.Message);
+                }
+            });
 
-            //LubCycle.Core.
-            //Task.Run(async ()=>
-            //{
-            //    await LoadGraph();
-            //    var startStation = Core.GeoHelper.Stations.FirstOrDefault(x => x.Uid == "674359");
-            //    var destStation = Core.GeoHelper.Stations.FirstOrDefault(x => x.Uid == "315255");
-            //    var stations = Core.GeoHelper.CalcRoute(startStation.Uid, destStation.Uid);
-            //    foreach (var station in stations)
-            //    {
-            //        Console.WriteLine(station.Name);
-            //    }
-            //});
             Console.ReadLine();
         }
         public static void ConfigureSettings()
