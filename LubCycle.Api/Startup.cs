@@ -12,6 +12,9 @@ using Microsoft.Extensions.Logging;
 using LubCycle.Api.Data;
 using LubCycle.Api.Models;
 using LubCycle.Api.Services;
+using LubCycle.Core;
+using LubCycle.Core.Helpers;
+using LubCycle.Core.Models.Navigation;
 using Swashbuckle.SwaggerGen.Generator;
 
 namespace LubCycle.Api
@@ -55,7 +58,25 @@ namespace LubCycle.Api
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
+            services.AddSingleton<Core.Helpers.NextBikeHelper>(provider => new NextBikeHelper(Configuration["CITY_UIDS"]));
+            services.AddSingleton<Core.Helpers.BingHelper>(provider => new BingHelper(Configuration["BING_MAPS_API_KEY"]));
 
+            double buffer;
+            services.AddSingleton<Core.Helpers.NavigationHelper>(
+                provider =>
+                    new NavigationHelper(
+                        new NavigationHelperSettings(
+                            provider.GetService<ApplicationDbContext>().TravelDurations.Cast<RouteStatistic>().ToList(),
+                            provider.GetService<NextBikeHelper>().GetStationsAsync().Result)
+                        {
+                            MaximalSingleDuration = double.TryParse(
+                                Configuration["MAX_SINGLE_DURATION"],
+                                out buffer)?buffer:2400.0,
+                            MaximalSingleDistance = double.TryParse(
+                                Configuration["MAX_DISTANCE_SQRT"],
+                                out buffer) ? buffer : 7.0
+                        }));
+            
             // Inject an implementation of ISwaggerProvider with defaulted settings applied
             services.AddSwaggerGen();
             services.ConfigureSwaggerGen(options =>

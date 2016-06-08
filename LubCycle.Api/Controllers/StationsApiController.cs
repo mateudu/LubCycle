@@ -13,11 +13,16 @@ namespace LubCycle.Api.Controllers
     [Route("api/Stations")]
     public class StationsApiController : Controller
     {
+        private Core.Helpers.NextBikeHelper _nextBikeHelper;
+        public StationsApiController(Core.Helpers.NextBikeHelper nextBikeHelper)
+        {
+            this._nextBikeHelper = nextBikeHelper;
+        }
+
         [HttpGet]
         public async Task<List<Place>> GetStations()
         {
-            await Core.NextBikeHelper.GetNextbikeInfoAsync();
-            return await LubCycle.Core.NextBikeHelper.GetStationsAsync(Startup.Configuration["CITY_UIDS"]);
+            return await _nextBikeHelper.GetStationsAsync();
         }
     }
 }

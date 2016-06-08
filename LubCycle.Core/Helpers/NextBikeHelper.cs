@@ -8,21 +8,30 @@ using System.Xml.Serialization;
 using LubCycle.Core.Models.NextBike;
 using LubCycle.Core.Models;
 
-namespace LubCycle.Core
+namespace LubCycle.Core.Helpers
 {
-    public static class NextBikeHelper
+    public class NextBikeHelper
     {
-        static NextBikeHelper()
+        private Marker _lastResponseInfo;
+        private DateTime _lastResponseTime = new DateTime(2000, 1, 1);
+        private readonly IEnumerable<string> _cityUids;
+        private readonly TimeSpan _updateSpan;
+
+        public NextBikeHelper(IEnumerable<string> cityUids, double updateSpan=15)
         {
-            _lastResponseTime = new DateTime(2000,1,1);
+            this._cityUids = cityUids;
+            this._updateSpan = TimeSpan.FromSeconds(updateSpan);
         }
 
+        public NextBikeHelper(string cityUids, double updateSpan=15) : this(cityUids.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries),updateSpan)
+        {   }
+        
         /// <summary>
         ///  Returns NextBike info. Updates every 15 seconds.
         /// </summary>
-        public static async Task<Marker> GetNextbikeInfoAsync()
+        public async Task<Marker> GetNextbikeInfoAsync()
         {
-            if (DateTime.Now - _lastResponseTime > TimeSpan.FromSeconds(15))
+            if (DateTime.Now - _lastResponseTime > _updateSpan)
             {
                 var client = new HttpClient();
                 var response = await client.GetAsync(new Uri(@"http://nextbike.net/maps/nextbike-official.xml"));
@@ -40,33 +49,15 @@ namespace LubCycle.Core
                 }
             }
             return _lastResponseInfo;
-
         }
 
         /// <summary>
-        ///  Returns stations in cityUids.
+        ///  Returns stations
         /// </summary>
         /// <param name="cityUid">List of cityUids</param>
-        public static async Task<List<Place>> GetStationsAsync(IEnumerable<string> cityUid)
+        public async Task<List<Place>> GetStationsAsync()
         {
-            if (_stations == null)
-            {
-                _stations = (await GetNextbikeInfoAsync()).GetStations(cityUid);
-            }
-            return _stations;
+            return (await GetNextbikeInfoAsync()).GetStations(_cityUids);
         }
-
-        /// <summary>
-        ///  Returns stations in cityUids.
-        /// </summary>
-        /// <param name="cityUid">CityUids, i.e "1,2,3,4"</param>
-        public static async Task<List<Place>> GetStationsAsync(string cityUid)
-        {
-            return await GetStationsAsync(cityUid.Split(new string[] {","}, StringSplitOptions.RemoveEmptyEntries));
-        }
-
-        private static List<Place> _stations;
-        private static Marker _lastResponseInfo;
-        private static DateTime _lastResponseTime;
     }
 }

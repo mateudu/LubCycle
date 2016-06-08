@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LubCycle.Core.Models.NextBike;
 
-namespace LubCycle.Core.Models.Geo
+namespace LubCycle.Core.Models.Navigation
 {
     public class Route
     {

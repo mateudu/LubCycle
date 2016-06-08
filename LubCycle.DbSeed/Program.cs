@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using LubCycle.Core;
 using LubCycle.Core.Models;
+using LubCycle.Core.Models.Navigation;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 
@@ -35,8 +36,9 @@ namespace LubCycle.DbSeed
             {
                 try
                 {
-                    var places = await LubCycle.Core.NextBikeHelper.GetStationsAsync(CityUids);
-                    var bing = new LubCycle.Core.BingHelper(BingMapsApiKey);
+                    var nextBike = new Core.Helpers.NextBikeHelper(CityUids);
+                    var places = await nextBike.GetStationsAsync();
+                    var bing = new LubCycle.Core.Helpers.BingHelper(BingMapsApiKey);
                     var db = new AppDatabase();
                     int counter = 0;
 
@@ -46,13 +48,13 @@ namespace LubCycle.DbSeed
                     {
                         for (int j = i + 1; j < places.Count; j++)
                         {
-                            if (LubCycle.Core.GeoHelper.CalcDistance(places[i], places[j]) < MaxDistanceSqrt)
+                            if (Core.Helpers.GeoHelper.CalcDistance(places[i], places[j]) < MaxDistanceSqrt)
                             {
                                 var response = await bing.GetDirectionsAsync(places[i], places[j]);
                                 resource = response.ResourceSets.First().Resources.First();
                                 if (resource.TravelDuration < MaxSingleDuration)
                                 {
-                                    Console.WriteLine(places[i].Name + " " + places[j].Name + " " + resource.TravelDistance);
+                                    //Console.WriteLine(places[i].Name + " " + places[j].Name + " " + resource.TravelDistance);
                                     db.TravelDurations.Add(new TravelDuration()
                                     {
                                         Distance = resource.TravelDistance,
@@ -81,7 +83,7 @@ namespace LubCycle.DbSeed
 
             Console.ReadLine();
         }
-        public static void ConfigureSettings()
+        private static void ConfigureSettings()
         {
             string buffer;
 

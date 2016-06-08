@@ -2,66 +2,31 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LubCycle.Core.Models;
-using LubCycle.Core.Models.Geo;
+using LubCycle.Core.Models.Navigation;
 using LubCycle.Core.Models.NextBike;
 
-namespace LubCycle.Core
+namespace LubCycle.Core.Helpers
 {
-    public class GeoHelper
+    public class NavigationHelper
     {
-        // Invoke 'LoadGraph()' method before calling 'GetRoute()'! 
-        //private async Task LoadGraph()
-        //{
-        //    if (Core.GeoHelper.TravelDurations == null || Core.GeoHelper.TravelDurations.Count == 0)
-        //    {
-        //        var obj = _context.TravelDurations.ToList();
-        //        Core.GeoHelper.TravelDurations = obj;
-        //    }
-        //    if (Core.GeoHelper.Stations == null)
-        //    {
-        //        Core.GeoHelper.Stations = await LubCycle.Core.NextBikeHelper.GetStationsAsync(Startup.Configuration["CITY_UIDS"]);
-        //    }
-        //}
-
-        // Calc distance using Geo-coordinates.
-        private const double EQuatorialEarthRadius = 6378.1370D;
-        private const double D2R = (Math.PI / 180D);
-
-        /// <summary>
-        ///  Returns distance from A to B in km.
-        /// </summary>
-        /// <param name="lat1">Point A - Latitude</param>
-        /// <param name="lng1">Point A - Longitude</param>
-        /// <param name="lat2">Point B - Latitude</param>
-        /// <param name="lng2">Point B - Longitude</param>
-        public static double CalcDistance(double lat1, double lng1, double lat2, double lng2)
+        public NavigationHelper(NavigationHelperSettings settings)
         {
-            double dlong = (lng2 - lng1) * D2R;
-            double dlat = (lat2 - lat1) * D2R;
-            double a = Math.Pow(Math.Sin(dlat / 2D), 2D) + Math.Cos(lat1 * D2R) * Math.Cos(lat2 * D2R) * Math.Pow(Math.Sin(dlong / 2D), 2D);
-            double c = 2D * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1D - a));
-            double d = EQuatorialEarthRadius * c;
-            return d;
+            this.RouteStatistics = settings.RouteStatistics;
+            this.Stations = settings.Stations;
+            this.MaximalSingleDuration = settings.MaximalSingleDuration;
+            this.MaximalSingleDistance = settings.MaximalSingleDistance;
         }
 
-        /// <summary>
-        ///  Returns distance between station A and B in km.
-        /// </summary>
-        /// <param name="start">Station A</param>
-        /// <param name="destination">Station B</param>
-        public static double CalcDistance(Models.NextBike.Place start, Models.NextBike.Place destination)
-        {
-            return CalcDistance(start.Lat, start.Lng, destination.Lat, destination.Lng);
-        }
-        
-        // Dijkstra's algorithm graph
-        private static List<List<Models.Geo.Edge>> _graph;
-        private static Dictionary<string, int> _edges;
-        public static List<TravelDuration> TravelDurations;
-        public static List<Place> Stations;
-        private static bool _isInitialized = false;
-        private static void InitializeGraph()
+        private List<List<Models.Navigation.Edge>> _graph;
+        private Dictionary<string, int> _edges;
+        public List<Models.Navigation.RouteStatistic> RouteStatistics;
+        public List<Place> Stations;
+        private bool _isInitialized = false;
+        public double MaximalSingleDuration;
+        public double MaximalSingleDistance;
+
+        // Initialize directed graph
+        private void InitializeGraph()
         {
             if (_isInitialized == false)
             {
@@ -76,34 +41,44 @@ namespace LubCycle.Core
                     _edges[Stations[i].Uid] = i;
                     _graph.Add(new List<Edge>());
                 }
-                for (int i = 0; i < TravelDurations.Count; i++)
+                foreach (RouteStatistic t in RouteStatistics)
                 {
-                    from = _edges[TravelDurations[i].Station1Uid];
-                    to = _edges[TravelDurations[i].Station2Uid];
-                    distance = TravelDurations[i].Distance;
-                    duration = TravelDurations[i].Duration;
-                    _graph[from].Add(new Edge
+                    if (t.Duration <= MaximalSingleDuration && t.Distance<= MaximalSingleDistance)
                     {
-                        Distance = distance,
-                        Duration = duration,
-                        To = to
-                    });
-                    _graph[to].Add(new Edge
-                    {
-                        Distance = distance,
-                        Duration = duration,
-                        To = from
-                    });
+                        from = _edges[t.Station1Uid];
+                        to = _edges[t.Station2Uid];
+                        distance = t.Distance;
+                        duration = t.Duration;
+                        _graph[from].Add(new Edge
+                        {
+                            Distance = distance,
+                            Duration = duration,
+                            To = to
+                        });
+                        _graph[to].Add(new Edge
+                        {
+                            Distance = distance,
+                            Duration = duration,
+                            To = from
+                        });
+                    }
                 }
                 _isInitialized = true;
             }
         }
 
-        private static List<Place> CalcRoute(string startUid, string destUid)
+        // Reinitialize directed graph
+        public void ReinitializeGraph()
+        {
+            _isInitialized = false;
+            InitializeGraph();
+        }
+
+        private List<Place> CalcRoute(string startUid, string destUid)
         {
             InitializeGraph();
-            int i, j, k, u, v;
-            Edge pw;
+            int i, j;
+            int v;
             v = _edges[startUid];
 
             double[] D = new double[Stations.Count];
@@ -111,6 +86,8 @@ namespace LubCycle.Core
             bool[] QS = new bool[Stations.Count];
             int[] S = new int[Stations.Count];
             int sptr = 0;
+
+            #region Dijkstra Algorithm
 
             for (i = 0; i < Stations.Count; i++)
             {
@@ -123,17 +100,18 @@ namespace LubCycle.Core
 
             for (i = 0; i < Stations.Count; i++)
             {
-                for (j = 0; QS[j]; j++);
+                for (j = 0; QS[j]; j++) ;
+                int u;
                 for (u = j++; j < Stations.Count; j++)
                 {
                     if (!QS[j] && (D[j] < D[u])) u = j;
                 }
 
                 QS[u] = true;
-
-                for (k = 0; k < _graph[u].Count; k++)
+                
+                for (int k = 0; k < _graph[u].Count; k++)
                 {
-                    pw = _graph[u][k];
+                    var pw = _graph[u][k];
                     if (!QS[pw.To] && (D[pw.To] > D[u] + pw.Duration))
                     {
                         D[pw.To] = D[u] + pw.Duration;
@@ -144,14 +122,13 @@ namespace LubCycle.Core
 
             for (j = _edges[destUid]; j > -1; j = P[j])
                 S[sptr++] = j;
-
+            #endregion
             var result = new List<Place>();
-            while (sptr > 0) /*cout << S[--sptr] << " ";*/
+            while (sptr > 0)
             {
                 result.Add(Stations[S[--sptr]]);
             }
-
-            //return null;
+            
             return result;
         }
 
@@ -160,7 +137,7 @@ namespace LubCycle.Core
         /// </summary>
         /// <param name="startUid">Start station Uid</param>
         /// <param name="destUid">Destination station Uid</param>
-        public static Route GetRoute(string startUid, string destUid)
+        public Route GetRoute(string startUid, string destUid)
         {
             Route result;
 
@@ -174,8 +151,8 @@ namespace LubCycle.Core
                 return result;
             }
 
-            var startStation = Core.GeoHelper.Stations.FirstOrDefault(x => x.Uid == startUid);
-            var destStation = Core.GeoHelper.Stations.FirstOrDefault(x => x.Uid == destUid);
+            var startStation = Stations.FirstOrDefault(x => x.Uid == startUid);
+            var destStation = Stations.FirstOrDefault(x => x.Uid == destUid);
 
             if (startStation == null || destStation == null)
             {
@@ -192,10 +169,10 @@ namespace LubCycle.Core
 
             for (int i = 1; i < stations.Count; i++)
             {
-                var el = Core.GeoHelper.TravelDurations.FirstOrDefault(x => 
+                var el = RouteStatistics.FirstOrDefault(x =>
                     x.Station1Uid == stations[i - 1].Uid && x.Station2Uid == stations[i].Uid ||
                     x.Station2Uid == stations[i - 1].Uid && x.Station1Uid == stations[i].Uid);
-                
+
                 if (el != null)
                 {
                     duration += el.Duration;
@@ -203,7 +180,7 @@ namespace LubCycle.Core
                 }
             }
 
-            if (stations.First()!= startStation || stations.Last()!=destStation)
+            if (stations.First() != startStation || stations.Last() != destStation)
             {
                 result = new Route()
                 {
