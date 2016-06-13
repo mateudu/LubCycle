@@ -112,9 +112,9 @@ namespace LubCycle.Core.Helpers
                 for (int k = 0; k < _graph[u].Count; k++)
                 {
                     var pw = _graph[u][k];
-                    if (!QS[pw.To] && (D[pw.To] > D[u] + pw.Duration))
+                    if (!QS[pw.To] && (D[pw.To] > D[u] + pw.Distance))
                     {
-                        D[pw.To] = D[u] + pw.Duration;
+                        D[pw.To] = D[u] + pw.Distance;
                         P[pw.To] = u;
                     }
                 }

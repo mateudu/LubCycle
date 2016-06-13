@@ -59,8 +59,13 @@ namespace LubCycle.Api
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
 
-            services.AddSingleton<Core.Helpers.NextBikeHelper>(provider => new NextBikeHelper(Configuration["CITY_UIDS"]));
-            services.AddSingleton<Core.Helpers.BingHelper>(provider => new BingHelper(Configuration["BING_MAPS_API_KEY"]));
+            // LubCycle Dependency Injection
+            services.AddSingleton<Core.Helpers.NextBikeHelper>(
+                provider => new NextBikeHelper(Configuration["CITY_UIDS"]));
+            services.AddSingleton<Core.Helpers.BingHelper>(
+                provider => new BingHelper(Configuration["BING_MAPS_API_KEY"]));
+            services.AddSingleton<Core.Helpers.GoogleMapsHelper>(
+                provider => new GoogleMapsHelper(Configuration["GOOGLE_MAPS_API_KEY"]));
 
             double buffer;
             services.AddSingleton<Core.Helpers.NavigationHelper>(
@@ -75,7 +80,7 @@ namespace LubCycle.Api
                                 out buffer)?buffer:2400.0,
                             MaximalSingleDistance = double.TryParse(
                                 Configuration["MAX_DISTANCE_SQRT"],
-                                out buffer) ? buffer : 7.0
+                                out buffer) ? buffer*1000.0 : 7000.0
                         }));
             
             // Inject an implementation of ISwaggerProvider with defaulted settings applied

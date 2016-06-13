@@ -4,8 +4,9 @@ netcoreconsole-LubCycle.DbSeed-dc931b5f-e529-4539-bac6-01f8ab82e18d\secrets.json
 
 {
   "BING_MAPS_API_KEY": "<BingMapsApiKey>",
-  "MAX_DISTANCE_SQRT": "7.0",
-  "MAX_SINGLE_DURATION": "2400",
-  "APP_DATABASE_CONNECTION_STRING": "<connectionString>",
-  "CITY_UIDS": "251,331"
+  "GOOGLE_MAPS_API_KEY": "<GoogleMapsApiKey>",
+  "MAX_DISTANCE_SQRT": "<Distance in KM, default 7.0>",
+  "MAX_SINGLE_DURATION": "<Maximal single duration in seconds>",
+  "APP_DATABASE_CONNECTION_STRING": "<ADO.NET connection string>",
+  "CITY_UIDS": "<City Uids separated by commas, i.e. 251,331>"
 }

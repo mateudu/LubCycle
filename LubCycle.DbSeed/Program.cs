@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using LubCycle.Core;
 using LubCycle.Core.Models;
+using LubCycle.Core.Models.GoogleMaps;
 using LubCycle.Core.Models.Navigation;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -14,13 +15,15 @@ namespace LubCycle.DbSeed
 {
     public class Program
     {
-        public static IConfigurationRoot Configuration { get; set; }
+        private static IConfigurationRoot Configuration { get; set; }
 
-        public static double MaxDistanceSqrt { get; private set; }
-        public static double MaxSingleDuration { get; private set; }
+        private static double MaxDistanceSqrt { get; set; }
+        private static double MaxSingleDuration { get; set; }
         public static string AppDatabaseConnectionString { get; private set; }
-        public static string BingMapsApiKey { get; private set; }
-        public static string CityUids { get; private set; }
+        private static string BingMapsApiKey { get; set; }
+        private static string GoogleMapsApiKey { get; set; }
+        private static string CityUids { get; set; }
+
 
         public static void Main(string[] args)
         {
@@ -38,42 +41,47 @@ namespace LubCycle.DbSeed
                 {
                     var nextBike = new Core.Helpers.NextBikeHelper(CityUids);
                     var places = await nextBike.GetStationsAsync();
-                    var bing = new LubCycle.Core.Helpers.BingHelper(BingMapsApiKey);
+                    var google = new Core.Helpers.GoogleMapsHelper(GoogleMapsApiKey);
                     var db = new AppDatabase();
                     int counter = 0;
 
                     var client = new HttpClient();
-                    var resource = new LubCycle.Core.Models.BingMaps.Resource();
+                    var obj = new Element();
                     for (int i = 0; i < places.Count; i++)
                     {
                         for (int j = i + 1; j < places.Count; j++)
                         {
                             if (Core.Helpers.GeoHelper.CalcDistance(places[i], places[j]) < MaxDistanceSqrt)
                             {
-                                var response = await bing.GetDirectionsAsync(places[i], places[j]);
-                                resource = response.ResourceSets.First().Resources.First();
-                                if (resource.TravelDuration < MaxSingleDuration)
+                                var response = await google.GetDistanceAsync(places[i], places[j]);
+                                obj = response.rows.FirstOrDefault()?.elements?.FirstOrDefault();
+                                double dist, dur;
+                                if (obj != null
+                                    && double.TryParse(obj.duration.value.ToString(), out dur)
+                                    && double.TryParse(obj.distance.value.ToString(), out dist)
+                                    && (double) dist < MaxDistanceSqrt*1000.0
+                                    && (double) dur < MaxSingleDuration)
                                 {
-                                    //Console.WriteLine(places[i].Name + " " + places[j].Name + " " + resource.TravelDistance);
+                                    Console.WriteLine($"{i}:{j} {places[i].Name}<=>{places[j].Name}, {counter++}");
                                     db.TravelDurations.Add(new TravelDuration()
                                     {
-                                        Distance = resource.TravelDistance,
-                                        Duration = (int)resource.TravelDuration,
+                                        Distance = dist,
+                                        Duration = dur,
                                         Station1Uid = places[i].Uid,
                                         Station2Uid = places[j].Uid
                                     });
-                                    if (counter % 50 == 0)
+                                    if (counter%50 == 0)
                                     {
                                         //Save every 50 entities.
-                                        //await db.SaveChangesAsync();
-                                        //Console.WriteLine("================= SAVED " + counter + " ==================");
+                                        await db.SaveChangesAsync();
+                                        Console.WriteLine("================= SAVED " + counter + " ==================");
                                     }
                                 }
-
                             }
                         }
                     }
-                    //await db.SaveChangesAsync();
+                    Console.WriteLine($"SAVED {counter} ENTITIES.");
+                    await db.SaveChangesAsync();
                 }
                 catch (Exception exc)
                 {
@@ -114,12 +122,10 @@ namespace LubCycle.DbSeed
             }
 
             buffer = Configuration["BING_MAPS_API_KEY"];
-            if (String.IsNullOrWhiteSpace(buffer))
-                throw new ArgumentNullException("BING_MAPS_API_KEY");
-            else
-            {
-                BingMapsApiKey = buffer;
-            }
+            BingMapsApiKey = buffer;
+
+            buffer = Configuration["GOOGLE_MAPS_API_KEY"];
+            GoogleMapsApiKey = buffer;
 
             buffer = Configuration["CITY_UIDS"];
             if (String.IsNullOrWhiteSpace(buffer))
