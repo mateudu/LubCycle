@@ -58,7 +58,11 @@ namespace LubCycle.Api
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
+
+            Console.WriteLine("IDS: "+ Configuration["CITY_UIDS"]);
+            Console.ReadLine();
             services.AddSingleton<Core.Helpers.NextBikeHelper>(provider => new NextBikeHelper(Configuration["CITY_UIDS"]));
+            Console.WriteLine("NEXTBIKE HELPER OK");
             services.AddSingleton<Core.Helpers.BingHelper>(provider => new BingHelper(Configuration["BING_MAPS_API_KEY"]));
 
             double buffer;
