@@ -29,23 +29,9 @@ namespace LubCycle.Api.Controllers
             _navHelper = navHelper;
         }
 
-
-        //private async Task LoadGraph()
-        //{
-        //    if (Core.GeoHelper.RouteStatistics == null || Core.GeoHelper.RouteStatistics.Count == 0)
-        //    {
-        //        var obj = _context.TravelDurations.ToList();
-        //        Core.GeoHelper.RouteStatistics = obj.Cast<Core.Models.Navigation.RouteStatistic>().ToList();
-        //    }
-        //    if (Core.GeoHelper.Stations == null)
-        //    {
-        //        Core.GeoHelper.Stations = await LubCycle.Core.NextBikeHelper.GetStationsAsync(Startup.Configuration["CITY_UIDS"]);
-        //    }
-        //}
-
         [HttpGet("{startUid}/{destUid}")]
         [ProducesResponseType(typeof(Core.Models.Navigation.Route),(int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetRoute(string startUid, string destUid)
+        public IActionResult GetRoute(string startUid, string destUid)
         {
             // Load travel times between stations
             //await LoadGraph();
