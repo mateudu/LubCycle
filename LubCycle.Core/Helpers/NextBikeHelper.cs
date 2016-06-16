@@ -29,7 +29,7 @@ namespace LubCycle.Core.Helpers
         /// <summary>
         ///  Returns NextBike info. Updates every 15 seconds.
         /// </summary>
-        public async Task<Marker> GetNextbikeInfoAsync()
+        private async Task<Marker> GetNextbikeInfoAsync()
         {
             if (DateTime.Now - _lastResponseTime > _updateSpan)
             {

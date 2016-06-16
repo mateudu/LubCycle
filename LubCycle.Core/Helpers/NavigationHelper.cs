@@ -135,36 +135,34 @@ namespace LubCycle.Core.Helpers
         /// <summary>
         ///  Get route from startUid station to destUid station.
         /// </summary>
-        /// <param name="startUid">Start station Uid</param>
-        /// <param name="destUid">Destination station Uid</param>
-        public Route GetRoute(string startUid, string destUid)
+        /// <param name="start">Start station Uid</param>
+        /// <param name="dest">Destination station Uid</param>
+        /// <param name="numberType">'Number'/'Uid'</param>
+        public Route GetRoute(string start, string dest, StationNumberType numberType)
         {
-            Route result;
-
-            if (startUid == destUid)
+            if (start == dest)
             {
-                result = new Route()
+                return new Route()
                 {
                     Status = RouteStatus.IncorrectArguments,
-                    Message = "'startUid' and 'destUid' cannot be the same."
+                    Message = "'start' and 'dest' cannot be the same."
                 };
-                return result;
             }
 
-            var startStation = Stations.FirstOrDefault(x => x.Uid == startUid);
-            var destStation = Stations.FirstOrDefault(x => x.Uid == destUid);
+            var startStation = GetStation(start,numberType);
+            var destStation = GetStation(dest, numberType);
 
             if (startStation == null || destStation == null)
             {
-                result = new Route()
+                return new Route()
                 {
                     Status = RouteStatus.IncorrectArguments,
                     Message = "'startUid'/'destUid' is incorrect."
                 };
-                return result;
             }
 
-            var stations = CalcRoute(startUid, destUid);
+
+            var stations = CalcRoute(startStation.Uid, destStation.Uid);
             double duration = 0, distance = 0;
 
             for (int i = 1; i < stations.Count; i++)
@@ -182,15 +180,14 @@ namespace LubCycle.Core.Helpers
 
             if (stations.First() != startStation || stations.Last() != destStation)
             {
-                result = new Route()
+                return new Route()
                 {
                     Status = RouteStatus.IncorrectArguments,
                     Message = "Route does not exist."
                 };
-                return result;
             }
 
-            result = new Route()
+            return new Route()
             {
                 Status = RouteStatus.Ok,
                 Message = "OK",
@@ -202,7 +199,19 @@ namespace LubCycle.Core.Helpers
                 EndTime = DateTime.Now.AddSeconds(duration),
                 Stations = stations
             };
-            return result;
+        }
+
+        private Place GetStation(string number, StationNumberType numberType)
+        {
+            switch (numberType)
+            {
+                case StationNumberType.StationNumber:
+                    return Stations.FirstOrDefault(x => x.Number.ToString() == number);
+                case StationNumberType.StationUid:
+                    return Stations.FirstOrDefault(x => x.Uid == number);
+                default:
+                    return null;
+            }
         }
     }
 }

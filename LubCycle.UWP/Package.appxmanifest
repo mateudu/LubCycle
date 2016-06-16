@@ -1,10 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity
-    Name="bdd02b42-feb1-4c0f-8314-e67a8d0e0f8d"
-    Publisher = "CN=M"
-    Version = "1.0.0.0" /> 
-  <mp:PhoneIdentity PhoneProductId="bdd02b42-feb1-4c0f-8314-e67a8d0e0f8d" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <Identity Name="bdd02b42-feb1-4c0f-8314-e67a8d0e0f8d" Publisher="CN=M" Version="1.0.0.0" />
+  <mp:PhoneIdentity PhoneProductId="bdd02b42-feb1-4c0f-8314-e67a8d0e0f8d" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>LubCycle.UWP</DisplayName>
     <PublisherDisplayName>M</PublisherDisplayName>
@@ -22,10 +19,14 @@
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png">
         </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
+        <uap:InitialRotationPreference>
+          <uap:Rotation Preference="portrait" />
+        </uap:InitialRotationPreference>
       </uap:VisualElements>
     </Application>
   </Applications>
   <Capabilities>
     <Capability Name="internetClient" />
+    <DeviceCapability Name="location" />
   </Capabilities>
 </Package>

@@ -9,7 +9,11 @@
     xmlns:controls="using:Template10.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vm="using:LubCycle.UWP.ViewModels" mc:Ignorable="d">
+    xmlns:vm="using:LubCycle.UWP.ViewModels"
+    xmlns:maps="using:Windows.UI.Xaml.Controls.Maps"
+    mc:Ignorable="d"
+    Loaded="StationsPage_OnLoaded"
+    >
 
     <Page.DataContext>
         <vm:StationsPageViewModel x:Name="ViewModel" />
@@ -24,7 +28,7 @@
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <!--  TODO: change properties for narrow view  -->
-                        
+
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="VisualStateNormal">
@@ -33,7 +37,7 @@
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <!--  TODO: change properties for normal view  -->
-                        
+
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="VisualStateWide">
@@ -42,7 +46,7 @@
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <!--  TODO: change properties for wide view  -->
-                        
+
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
@@ -52,7 +56,12 @@
                              RelativePanel.AlignRightWithPanel="True"
                              RelativePanel.AlignTopWithPanel="True" Text="Stacje">
 
-            <!--  secondary commands  -->
+            <controls:PageHeader.PrimaryCommands>
+                <AppBarButton Icon="Refresh" Label="Odświerz"/>
+            </controls:PageHeader.PrimaryCommands>
+
+
+            <!--secondary commands-->
             <controls:PageHeader.SecondaryCommands>
                 <!--<AppBarButton Click="{x:Bind ViewModel.GotoSettings}" Label="Settings" />
                 <AppBarButton Click="{x:Bind ViewModel.GotoPrivacy}" Label="Privacy" />
@@ -60,6 +69,40 @@
             </controls:PageHeader.SecondaryCommands>
 
         </controls:PageHeader>
+
+        <Grid RelativePanel.Below="pageHeader"
+              RelativePanel.AlignLeftWithPanel="True"
+              RelativePanel.AlignRightWithPanel="True"
+              RelativePanel.AlignBottomWithPanel="True"
+              >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="2*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <maps:MapControl x:Name="stationsMap"
+                            Grid.Row="0"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            BusinessLandmarksVisible="True"
+                            LandmarksVisible="True"
+                            PedestrianFeaturesVisible="True"
+                         />
+                <Slider x:Name="bikeCountSlider"
+                        Grid.Row="1"
+                        Margin="10,0,10,0"
+                        Header="Ilość dostępnych rowerów"
+                        Minimum="0"
+                        Maximum="5"
+                        StepFrequency="1"
+                />
+            </Grid>
+        </Grid>
 
         <!--<controls:Resizer x:Name="parameterResizer" Margin="16,16,16,0"
                           RelativePanel.AlignLeftWithPanel="True"

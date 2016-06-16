@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace LubCycle.Api.Controllers
 {
     [Produces("application/json")]
-    [Route("api/Route")]
+    [Route("api/route")]
     public class RouteController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -29,17 +29,22 @@ namespace LubCycle.Api.Controllers
             _navHelper = navHelper;
         }
 
-        [HttpGet("{startUid}/{destUid}")]
+        [HttpGet("station-uid/{startUid}/{destUid}")]
         [ProducesResponseType(typeof(Core.Models.Navigation.Route),(int)HttpStatusCode.OK)]
-        public IActionResult GetRoute(string startUid, string destUid)
+        public IActionResult GetRouteByStationUid(string startUid, string destUid)
         {
-            // Load travel times between stations
-            //await LoadGraph();
+            var result = _navHelper.GetRoute(startUid, destUid, StationNumberType.StationUid);
+            if (result.Status == RouteStatus.IncorrectArguments)
+                return BadRequest(result);
 
-            var result = _navHelper.GetRoute(startUid, destUid);
+            return Ok(result);
+        }
 
-            //var result = Core.GeoHelper.GetRoute(startUid, destUid);
-
+        [HttpGet("station-number/{startNumber}/{destNumer}")]
+        [ProducesResponseType(typeof(Core.Models.Navigation.Route), (int)HttpStatusCode.OK)]
+        public IActionResult GetRouteByStationNumber(string startNumber, string destNumer)
+        {
+            var result = _navHelper.GetRoute(startNumber, destNumer, StationNumberType.StationNumber);
             if (result.Status == RouteStatus.IncorrectArguments)
                 return BadRequest(result);
 
