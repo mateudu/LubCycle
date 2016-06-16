@@ -10,6 +10,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:LubCycle.UWP.ViewModels"
+    xmlns:models="using:LubCycle.UWP.Models"
     xmlns:maps="using:Windows.UI.Xaml.Controls.Maps"
     mc:Ignorable="d"
     Loaded="StationsPage_OnLoaded"
@@ -57,7 +58,8 @@
                              RelativePanel.AlignTopWithPanel="True" Text="Stacje">
 
             <controls:PageHeader.PrimaryCommands>
-                <AppBarButton Icon="Refresh" Label="Odświerz"/>
+                <AppBarButton x:Name="refreshButton" Icon="Refresh" Label="Odświerz"
+                              Click="RefreshButton_OnClick"/>
             </controls:PageHeader.PrimaryCommands>
 
 
@@ -92,6 +94,7 @@
                             BusinessLandmarksVisible="True"
                             LandmarksVisible="True"
                             PedestrianFeaturesVisible="True"
+                                 MapServiceToken="pYvhKdz5gxUCF2HNVGo3~0mOzxV8x2lXr6tQsDZF8Mg~Atqlf1dFSmCvM1TE8DKbH_b0tAZ6vlAAFlAFFc981m8Kb2WMZDeJmQKv3fmdpauE"
                          />
                 <Slider x:Name="bikeCountSlider"
                         Grid.Row="1"
@@ -100,8 +103,19 @@
                         Minimum="0"
                         Maximum="5"
                         StepFrequency="1"
+                        ValueChanged="BikeCountSlider_OnValueChanged"
                 />
             </Grid>
+            <ListView Grid.Row="1" ItemsSource="{x:Bind StationListViewItems}">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="models:StationsListViewItem">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{x:Bind Station.Name}"/>
+                            <TextBlock Text="XXX m"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
         </Grid>
 
         <!--<controls:Resizer x:Name="parameterResizer" Margin="16,16,16,0"
