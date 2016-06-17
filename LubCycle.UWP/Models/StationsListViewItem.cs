@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Devices.Geolocation;
 
 namespace LubCycle.UWP.Models
 {
@@ -10,5 +11,6 @@ namespace LubCycle.UWP.Models
     {
         public Place Station { get; set; }
         public double Distance { get; set; }
+        public Geopoint Geopoint { get; set; }
     }
 }

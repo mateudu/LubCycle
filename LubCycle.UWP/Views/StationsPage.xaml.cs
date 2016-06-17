@@ -33,19 +33,18 @@ namespace LubCycle.UWP.Views
     public sealed partial class StationsPage : Page
     {
         Template10.Services.SerializationService.ISerializationService _SerializationService;
-        private LubCycleHelper _lubcycle = new LubCycleHelper();
-        ObservableCollection<StationsListViewItem> StationListViewItems = new ObservableCollection<StationsListViewItem>();
+        private readonly LubCycleHelper _lubcycle = new LubCycleHelper();
+        readonly ObservableCollection<StationsListViewItem> StationListViewItems = new ObservableCollection<StationsListViewItem>();
         private List<Place> _stations = new List<Place>();
         private Geoposition _position = null;
-
-        private string _locationMessage;
-        private string _apiMessage;
 
         public StationsPage()
         {
             this.InitializeComponent();
             _SerializationService = Template10.Services.SerializationService.SerializationService.Json;
             stationsMap.MapServiceToken = @"ApcN9o_xREqWLKuVV0MKfqmsd2hapuXA-Jo-mhuhJunA6XLF-Bgi-goFFp4PgEZu";
+            stationsMap.Center = _position != null ? _position.Coordinate.Point : new Geopoint(new BasicGeoposition() { Latitude = 51.2465, Longitude = 22.5684 });
+            stationsMap.ZoomLevel = 15.0;
         }
 
         private async void StationsPage_OnLoaded(object sender, RoutedEventArgs e)
@@ -66,15 +65,14 @@ namespace LubCycle.UWP.Views
         private async Task<Geoposition> GetPositionAsync()
         {
             var accessStatus = await Geolocator.RequestAccessAsync();
-            Geoposition pos;
             try
             {
                 switch (accessStatus)
                 {
                     case GeolocationAccessStatus.Allowed:
                         // If DesiredAccuracy or DesiredAccuracyInMeters are not set (or value is 0), DesiredAccuracy.Default is used.
-                        Geolocator geolocator = new Geolocator {DesiredAccuracyInMeters = 100};
-                        pos = await geolocator.GetGeopositionAsync();
+                        var geolocator = new Geolocator {DesiredAccuracyInMeters = 100};
+                        var pos = await geolocator.GetGeopositionAsync();
                         return pos;
 
                     case GeolocationAccessStatus.Denied:
@@ -87,7 +85,7 @@ namespace LubCycle.UWP.Views
             }
             catch (Exception)
             {
-
+                // ignored
             }
             return null;
         }
@@ -106,8 +104,8 @@ namespace LubCycle.UWP.Views
 
             foreach (var obj in _stations)
             {
-                if (obj.Bikes == @"5+")
-                    obj.Bikes = "5";
+                if (obj.Bikes != @"5+") continue;
+                obj.Bikes = "5";
             }
 
             if (stations.Result == null)
@@ -115,11 +113,11 @@ namespace LubCycle.UWP.Views
                 try
                 {
                     var dlg = new MessageDialog("Wystąpił problem z połączeniem z serwisem.");
-                    dlg.ShowAsync();
+                    await dlg.ShowAsync();
                 }
                 catch (Exception)
                 {
-                    
+                    // ignored
                 }
             }
         }
@@ -128,18 +126,12 @@ namespace LubCycle.UWP.Views
         {
             try
             {
-                stationsMap.Center = new Geopoint(new BasicGeoposition() {Latitude = 51.2465, Longitude = 22.5684});
                 refreshButton.IsEnabled = false;
                 bikeCountSlider.IsEnabled = false;
                 await ReloadStationsAndPositionAsync();
                 ReloadList();
-                if (_position != null)
-                {
-                    stationsMap.Center = _position.Coordinate.Point;
-                    MapIcon POI = new MapIcon { Location = _position.Coordinate.Point, NormalizedAnchorPoint = new Point(0.5, 1.0), Title = "Moja pozycja", ZIndex = 0 };
-                    stationsMap.MapElements.Add(POI);
-                }
 
+                stationsMap.Center = _position != null ? _position.Coordinate.Point : new Geopoint(new BasicGeoposition() { Latitude = 51.2465, Longitude = 22.5684 });
                 stationsMap.ZoomLevel = 15.0;
             }
             catch (Exception exc)
@@ -163,13 +155,20 @@ namespace LubCycle.UWP.Views
                 list.Add(
                     new StationsListViewItem
                     {
-                        Station = x
+                        Station = x,
+                        Geopoint = new Geopoint(new BasicGeoposition() { Latitude = x.Lat, Longitude = x.Lng })
                     });
-                Geopoint myPoint = new Geopoint(new BasicGeoposition() { Latitude = x.Lat, Longitude = x.Lng });
-                MapIcon myPOI = new MapIcon { Location = myPoint, NormalizedAnchorPoint = new Point(0.5, 1.0), Title = x.Name, ZIndex = 0 };
-                stationsMap.MapElements.Add(myPOI);
+                //var myPoint = new Geopoint(new BasicGeoposition() { Latitude = x.Lat, Longitude = x.Lng });
+                //var myPoi = new MapIcon { Location = myPoint, NormalizedAnchorPoint = new Point(0.5, 1.0), Title = x.Name, ZIndex = 0 };
+                //stationsMap.MapElements.Add(myPoi);
             });
+            
             StationListViewItems.AddRange(list, true);
+            if (_position != null)
+            {
+                var poi = new MapIcon { Location = _position.Coordinate.Point, NormalizedAnchorPoint = new Point(0.5, 1.0), Title = "Moja pozycja", ZIndex = 0 };
+                stationsMap.MapElements.Add(poi);
+            }
         }
     }
 }

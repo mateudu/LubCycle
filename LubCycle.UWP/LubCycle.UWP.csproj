@@ -98,6 +98,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Helpers\GeoHelper.cs" />
+    <Compile Include="Helpers\LocationHelper.cs" />
     <Compile Include="Helpers\LubCycleHelper.cs" />
     <Compile Include="Models\Place.cs" />
     <Compile Include="Models\Route.cs" />

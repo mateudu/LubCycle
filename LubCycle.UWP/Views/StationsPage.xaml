@@ -15,7 +15,7 @@
     mc:Ignorable="d"
     Loaded="StationsPage_OnLoaded"
     >
-
+    
     <Page.DataContext>
         <vm:StationsPageViewModel x:Name="ViewModel" />
     </Page.DataContext>
@@ -94,8 +94,30 @@
                             BusinessLandmarksVisible="True"
                             LandmarksVisible="True"
                             PedestrianFeaturesVisible="True"
-                                 MapServiceToken="pYvhKdz5gxUCF2HNVGo3~0mOzxV8x2lXr6tQsDZF8Mg~Atqlf1dFSmCvM1TE8DKbH_b0tAZ6vlAAFlAFFc981m8Kb2WMZDeJmQKv3fmdpauE"
-                         />
+                            MapServiceToken="pYvhKdz5gxUCF2HNVGo3~0mOzxV8x2lXr6tQsDZF8Mg~Atqlf1dFSmCvM1TE8DKbH_b0tAZ6vlAAFlAFFc981m8Kb2WMZDeJmQKv3fmdpauE"
+                            >
+                    <maps:MapItemsControl ItemsSource="{x:Bind StationListViewItems}">
+                        <maps:MapItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="models:StationsListViewItem">
+                                <StackPanel Background="MediumSeaGreen" MaxWidth="100" Padding="10" 
+                                            Opacity="0.7" maps:MapControl.Location="{x:Bind Geopoint, Mode=OneWay}">
+                                    <TextBlock Text="{x:Bind Station.Name}" FontSize="10" Opacity="0.7"
+                                               Foreground="White"
+                                               TextWrapping="WrapWholeWords"
+                                                />
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock FontSize="9" Foreground="White" Text="Rowery:  "/>
+                                        <TextBlock FontSize="9"  Foreground="White" Text="{x:Bind Station.Bikes}"/>
+                                    </StackPanel>
+                                    
+                                    <TextBlock Text="&#xE1D2;" FontFamily="Segoe MDL2 Assets" FontSize="10" 
+                                    Visibility="Visible"
+                                    />
+                                </StackPanel>
+                            </DataTemplate>
+                        </maps:MapItemsControl.ItemTemplate>
+                    </maps:MapItemsControl>
+                </maps:MapControl>
                 <Slider x:Name="bikeCountSlider"
                         Grid.Row="1"
                         Margin="10,0,10,0"
