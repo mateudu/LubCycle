@@ -16,11 +16,18 @@ namespace LubCycle.UWP.Helpers
 
         public async Task<List<Place>> GetStationsAsync()
         {
-            var url = new Uri($"{_serviceUrl}api/stations");
-            var result = await _client.GetAsync(url);
-            var response = await result.Content.ReadAsStringAsync();
-            var obj = JsonConvert.DeserializeObject<List<Place>>(response);
-            return obj;
+            try
+            {
+                var url = new Uri($"{_serviceUrl}api/stations");
+                var result = await _client.GetAsync(url);
+                var response = await result.Content.ReadAsStringAsync();
+                var obj = JsonConvert.DeserializeObject<List<Place>>(response);
+                return obj;
+            }
+            catch (Exception exc)
+            {
+                return null;
+            }
         }
     }
 }
