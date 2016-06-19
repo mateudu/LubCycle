@@ -15,7 +15,7 @@
     mc:Ignorable="d"
     Loaded="StationsPage_OnLoaded"
     >
-    
+
     <Page.DataContext>
         <vm:StationsPageViewModel x:Name="ViewModel" />
     </Page.DataContext>
@@ -58,6 +58,19 @@
                              RelativePanel.AlignTopWithPanel="True" Text="Stacje">
 
             <controls:PageHeader.PrimaryCommands>
+                <AppBarButton x:Name="filterButton" Icon="Filter" Label="Filtruj">
+                    <AppBarButton.Flyout>
+                        <Flyout Placement="Bottom">
+                            <Flyout.Content>
+                                <ComboBox x:Name="bikeCountPicker" 
+                                          Header="Ilość rowerów"
+                                          ItemsSource="{x:Bind BikeCountItems}"
+                                          SelectionChanged="BikeCountPicker_OnSelectionChanged"
+                                          />
+                            </Flyout.Content>
+                        </Flyout>
+                    </AppBarButton.Flyout>
+                </AppBarButton>
                 <AppBarButton x:Name="refreshButton" Icon="Refresh" Label="Odświerz"
                               Click="RefreshButton_OnClick"/>
             </controls:PageHeader.PrimaryCommands>
@@ -78,8 +91,8 @@
               RelativePanel.AlignBottomWithPanel="True"
               >
             <Grid.RowDefinitions>
-                <RowDefinition Height="3*"/>
-                <RowDefinition Height="2*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0">
@@ -94,47 +107,70 @@
                             BusinessLandmarksVisible="True"
                             LandmarksVisible="True"
                             PedestrianFeaturesVisible="True"
-                            MapServiceToken="pYvhKdz5gxUCF2HNVGo3~0mOzxV8x2lXr6tQsDZF8Mg~Atqlf1dFSmCvM1TE8DKbH_b0tAZ6vlAAFlAFFc981m8Kb2WMZDeJmQKv3fmdpauE"
                             >
-                    <maps:MapItemsControl ItemsSource="{x:Bind StationListViewItems}">
+                    <maps:MapItemsControl ItemsSource="{x:Bind MapItemsSource}">
                         <maps:MapItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="models:StationsListViewItem">
-                                <StackPanel Background="MediumSeaGreen" MaxWidth="100" Padding="10" 
-                                            Opacity="0.7" maps:MapControl.Location="{x:Bind Geopoint, Mode=OneWay}">
-                                    <TextBlock Text="{x:Bind Station.Name}" FontSize="10" Opacity="0.7"
-                                               Foreground="White"
-                                               TextWrapping="WrapWholeWords"
-                                                />
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock FontSize="9" Foreground="White" Text="Rowery:  "/>
-                                        <TextBlock FontSize="9"  Foreground="White" Text="{x:Bind Station.Bikes}"/>
+                                <StackPanel maps:MapControl.NormalizedAnchorPoint="{x:Bind AnchorPoint}"
+                                            maps:MapControl.Location="{x:Bind Geopoint, Mode=OneWay}">
+                                    <StackPanel Background="{ThemeResource CustomColorBrush}" MaxWidth="120">
+                                        <TextBlock Text="{x:Bind Station.Name}" FontSize="10"
+                                                   TextWrapping="WrapWholeWords"
+                                                   Foreground="{ThemeResource ContrastColorBrush}"
+                                                   Padding="5,5,5,0"
+                                                   />
+                                        <StackPanel Orientation="Horizontal" Padding="5,0,0,5">
+                                            <TextBlock Text="Rowery:" FontSize="8"
+                                                   Foreground="{ThemeResource ContrastColorBrush}"
+                                                   Opacity="0.8"
+                                                   />
+                                            <TextBlock Text="{x:Bind Station.Bikes}" FontSize="8"
+                                                   Foreground="{ThemeResource ContrastColorBrush}"
+                                                   Opacity="0.8"
+                                                   />
+                                        </StackPanel>
                                     </StackPanel>
-                                    
-                                    <TextBlock Text="&#xE1D2;" FontFamily="Segoe MDL2 Assets" FontSize="10" 
-                                    Visibility="Visible"
-                                    />
+                                    <Polygon Points="0,0 30,0 0,50" Fill="{ThemeResource CustomColorBrush}"/>
                                 </StackPanel>
                             </DataTemplate>
                         </maps:MapItemsControl.ItemTemplate>
                     </maps:MapItemsControl>
                 </maps:MapControl>
-                <Slider x:Name="bikeCountSlider"
-                        Grid.Row="1"
-                        Margin="10,0,10,0"
-                        Header="Ilość dostępnych rowerów"
-                        Minimum="0"
-                        Maximum="5"
-                        StepFrequency="1"
-                        ValueChanged="BikeCountSlider_OnValueChanged"
-                />
             </Grid>
-            <ListView Grid.Row="1" ItemsSource="{x:Bind StationListViewItems}">
+            <ListView x:Name="StationsListView"
+                      Grid.Row="1" 
+                      ItemsSource="{x:Bind MapItemsSource}"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Stretch"
+                      SelectionChanged="StationsListView_OnSelectionChanged"
+                      >
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    </Style>
+                </ListView.ItemContainerStyle>
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="models:StationsListViewItem">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{x:Bind Station.Name}"/>
-                            <TextBlock Text="XXX m"/>
-                        </StackPanel>
+                        <Grid HorizontalAlignment="Stretch">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" 
+                                        Orientation="Vertical"
+                                        HorizontalAlignment="Stretch">
+                                <TextBlock FontSize="15" FontWeight="SemiBold" Text="{x:Bind Station.Name}"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontSize="12" Text="Rowery:"/>
+                                    <TextBlock FontSize="12" Text="{x:Bind Station.Bikes}"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal"
+                                        HorizontalAlignment="Right">
+                                <TextBlock Text="{x:Bind Distance}"/>
+                                <TextBlock Text="m"/>
+                            </StackPanel>
+                        </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>

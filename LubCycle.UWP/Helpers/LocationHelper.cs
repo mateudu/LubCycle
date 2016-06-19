@@ -32,7 +32,7 @@ namespace LubCycle.UWP.Helpers
         static LocationHelper()
         {
             // TODO Replace the placeholder string below with your own Bing Maps key from https://www.bingmapsportal.com
-            MapService.ServiceToken = "<insert your Bing Maps key here>";
+            MapService.ServiceToken = StaticData.MapServiceToken;
         }
 
         /// <summary>

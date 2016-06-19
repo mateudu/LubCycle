@@ -11,47 +11,38 @@ namespace LubCycle.UWP.Helpers
 {
     class GeoHelper
     {
-        public static async Task<Geoposition> GetPositionAsync()
+        // Calc distance using Geo-coordinates.
+        private const double EQuatorialEarthRadius = 6378.1370D;
+        private const double D2R = (Math.PI / 180D);
+
+        /// <summary>
+        ///  Returns distance from A to B in km.
+        /// </summary>
+        /// <param name="lat1">Point A - Latitude</param>
+        /// <param name="lng1">Point A - Longitude</param>
+        /// <param name="lat2">Point B - Latitude</param>
+        /// <param name="lng2">Point B - Longitude</param>
+        public static double CalcDistanceInKilometers(double lat1, double lng1, double lat2, double lng2)
         {
-            Geoposition _pos = null;
-            try
-            {
+            double dlong = (lng2 - lng1) * D2R;
+            double dlat = (lat2 - lat1) * D2R;
+            double a = Math.Pow(Math.Sin(dlat / 2D), 2D) + Math.Cos(lat1 * D2R) * Math.Cos(lat2 * D2R) * Math.Pow(Math.Sin(dlong / 2D), 2D);
+            double c = 2D * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1D - a));
+            double d = EQuatorialEarthRadius * c;
+            return d;
+        }
 
-                // Request permission to access location
-                var accessStatus = await Geolocator.RequestAccessAsync();
 
-                if (accessStatus == GeolocationAccessStatus.Allowed)
-                {
-                    // Get cancellation token
-                    var _cts = new CancellationTokenSource();
-                    CancellationToken token = _cts.Token;
-
-                    // If DesiredAccuracy or DesiredAccuracyInMeters are not set (or value is 0), DesiredAccuracy.Default is used.
-                    //Geolocator geolocator = new Geolocator { DesiredAccuracyInMeters = _desireAccuracyInMetersValue };
-                    Geolocator geolocator = new Geolocator();
-
-                    // Carry out the operation
-                    _pos = await geolocator.GetGeopositionAsync().AsTask(token);
-                    //stationsMap.Center = _pos.Coordinate.Point;
-                    //stationsMap.ZoomLevel = 15.0;
-                }
-                else
-                {
-                    //throw new Exception("Problem with location permissions or access");
-                    var dlg = new MessageDialog("Dostęp do lokalizacji jest wyłączony!");
-                    await dlg.ShowAsync();
-                }
-
-            }
-            catch (TaskCanceledException tce)
-            {
-                //throw new Exception("Task cancelled" + tce.Message);
-            }
-            finally
-            {
-                //_cts = null;
-            }
-            return _pos;
+        /// <summary>
+        ///  Returns distance from A to B in km.
+        /// </summary>
+        /// <param name="lat1">Point A - Latitude</param>
+        /// <param name="lng1">Point A - Longitude</param>
+        /// <param name="lat2">Point B - Latitude</param>
+        /// <param name="lng2">Point B - Longitude</param>
+        public static int CalcDistanceInMeters(double lat1, double lng1, double lat2, double lng2)
+        {
+            return (int) (CalcDistanceInKilometers(lat1, lng1, lat2, lng2)*1000.0);
         }
     }
 }

@@ -10,6 +10,7 @@ using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.System;
+using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -33,8 +34,12 @@ namespace LubCycle.UWP.Views
     public sealed partial class StationsPage : Page
     {
         Template10.Services.SerializationService.ISerializationService _SerializationService;
+        public readonly int[] BikeCountItems = new[] { 0, 1, 2, 3, 4, 5 };
+        private int _selectedBikes = 0;
+
         private readonly LubCycleHelper _lubcycle = new LubCycleHelper();
-        readonly ObservableCollection<StationsListViewItem> StationListViewItems = new ObservableCollection<StationsListViewItem>();
+        readonly ObservableCollection<StationsListViewItem> MapItemsSource = new ObservableCollection<StationsListViewItem>();
+        private List<StationsListViewItem> StationsListViewItems = new List<StationsListViewItem>();
         private List<Place> _stations = new List<Place>();
         private Geoposition _position = null;
 
@@ -42,71 +47,36 @@ namespace LubCycle.UWP.Views
         {
             this.InitializeComponent();
             _SerializationService = Template10.Services.SerializationService.SerializationService.Json;
-            stationsMap.MapServiceToken = @"ApcN9o_xREqWLKuVV0MKfqmsd2hapuXA-Jo-mhuhJunA6XLF-Bgi-goFFp4PgEZu";
-            stationsMap.Center = _position != null ? _position.Coordinate.Point : new Geopoint(new BasicGeoposition() { Latitude = 51.2465, Longitude = 22.5684 });
+            stationsMap.MapServiceToken = StaticData.MapServiceToken;
+            stationsMap.Center = StaticData.DefaultMapCenter;
             stationsMap.ZoomLevel = 15.0;
         }
 
         private async void StationsPage_OnLoaded(object sender, RoutedEventArgs e)
         {
-            await ReloadPage();
-        }
-
-        private void BikeCountSlider_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-        {
-            ReloadList();
+            await LoadPageAsync();
         }
 
         private async void RefreshButton_OnClick(object sender, RoutedEventArgs e)
         {
-            await ReloadPage();
+            await LoadPageAsync();
         }
 
-        private async Task<Geoposition> GetPositionAsync()
+        private void BikeCountPicker_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var accessStatus = await Geolocator.RequestAccessAsync();
-            try
-            {
-                switch (accessStatus)
-                {
-                    case GeolocationAccessStatus.Allowed:
-                        // If DesiredAccuracy or DesiredAccuracyInMeters are not set (or value is 0), DesiredAccuracy.Default is used.
-                        var geolocator = new Geolocator {DesiredAccuracyInMeters = 100};
-                        var pos = await geolocator.GetGeopositionAsync();
-                        return pos;
-
-                    case GeolocationAccessStatus.Denied:
-                        break;
-
-                    case GeolocationAccessStatus.Unspecified:
-                        break;
-                }
-
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
-            return null;
+            int? val = (sender as ComboBox).SelectedItem as int?;
+            _selectedBikes = val.Value;
+            ReloadList();
         }
 
-
-        private async Task ReloadStationsAndPositionAsync()
+        private async Task LoadStationsAndPositionAsync()
         {
-            var accessStatus = await Geolocator.RequestAccessAsync();
-
-            var pos = GetPositionAsync();
+            var pos = LocationHelper.GetCurrentLocationAsync();
             var stations = _lubcycle.GetStationsAsync();
 
             await Task.WhenAll(pos, stations);
             _stations = stations.Result ?? _stations;
             _position = pos.Result ?? _position;
-
-            foreach (var obj in _stations)
-            {
-                if (obj.Bikes != @"5+") continue;
-                obj.Bikes = "5";
-            }
 
             if (stations.Result == null)
             {
@@ -120,18 +90,42 @@ namespace LubCycle.UWP.Views
                     // ignored
                 }
             }
+
+            StationsListViewItems.Clear();
+
+            foreach (var obj in _stations)
+            {
+                if (obj.Bikes == @"5+")
+                    obj.Bikes = "5";
+                StationsListViewItems.Add(
+                    new StationsListViewItem()
+                    {
+                        Geopoint = new Geopoint(
+                        new BasicGeoposition()
+                        {
+                            Latitude = obj.Lat,
+                            Longitude = obj.Lng,
+                        }),
+                        Station = obj,
+                        Distance = GeoHelper.CalcDistanceInMeters(
+                            _position.Coordinate.Latitude,
+                            _position.Coordinate.Longitude,
+                            obj.Lat, 
+                            obj.Lng)
+                    });
+            }
         }
 
-        private async Task ReloadPage()
+        private async Task LoadPageAsync()
         {
             try
             {
                 refreshButton.IsEnabled = false;
-                bikeCountSlider.IsEnabled = false;
-                await ReloadStationsAndPositionAsync();
+                filterButton.IsEnabled = false;
+                await LoadStationsAndPositionAsync();
                 ReloadList();
 
-                stationsMap.Center = _position != null ? _position.Coordinate.Point : new Geopoint(new BasicGeoposition() { Latitude = 51.2465, Longitude = 22.5684 });
+                stationsMap.Center = _position != null ? _position.Coordinate.Point : StaticData.DefaultMapCenter;
                 stationsMap.ZoomLevel = 15.0;
             }
             catch (Exception exc)
@@ -142,33 +136,27 @@ namespace LubCycle.UWP.Views
             finally
             {
                 refreshButton.IsEnabled = true;
-                bikeCountSlider.IsEnabled = true;
+                filterButton.IsEnabled = true;
             }
         }
 
         private void ReloadList()
         {
             stationsMap.MapElements.Clear();
-            var list = new List<StationsListViewItem>();
-            _stations.Where(x => int.Parse(x.Bikes) >= (int) bikeCountSlider.Value).ForEach(x=>
-            {
-                list.Add(
-                    new StationsListViewItem
-                    {
-                        Station = x,
-                        Geopoint = new Geopoint(new BasicGeoposition() { Latitude = x.Lat, Longitude = x.Lng })
-                    });
-                //var myPoint = new Geopoint(new BasicGeoposition() { Latitude = x.Lat, Longitude = x.Lng });
-                //var myPoi = new MapIcon { Location = myPoint, NormalizedAnchorPoint = new Point(0.5, 1.0), Title = x.Name, ZIndex = 0 };
-                //stationsMap.MapElements.Add(myPoi);
-            });
-            
-            StationListViewItems.AddRange(list, true);
+            var obj = StationsListViewItems.Where(x => int.Parse(x.Station.Bikes) >= _selectedBikes).ToList();
+            obj.Sort((x, y) => x.Distance.CompareTo(y.Distance));
+            MapItemsSource.AddRange(obj, true);
             if (_position != null)
             {
                 var poi = new MapIcon { Location = _position.Coordinate.Point, NormalizedAnchorPoint = new Point(0.5, 1.0), Title = "Moja pozycja", ZIndex = 0 };
                 stationsMap.MapElements.Add(poi);
             }
+        }
+
+        private async void StationsListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var obj = (sender as ListView).SelectedItem as StationsListViewItem;
+            await stationsMap.TrySetViewAsync(obj.Geopoint, 15.0);
         }
     }
 }
