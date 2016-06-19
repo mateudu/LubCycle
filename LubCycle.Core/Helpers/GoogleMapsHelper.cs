@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using LubCycle.Core.Models.NextBike;
+using Newtonsoft.Json;
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using LubCycle.Core.Models.NextBike;
-using Newtonsoft.Json;
 
 namespace LubCycle.Core.Helpers
 {
@@ -31,7 +29,7 @@ namespace LubCycle.Core.Helpers
                               $"&unites=metrics&key={_apiKey}");
             if (client == null)
             {
-                client=new HttpClient();
+                client = new HttpClient();
             }
             var response = (await client.GetAsync(uri));
             var result = await response.Content.ReadAsStringAsync();

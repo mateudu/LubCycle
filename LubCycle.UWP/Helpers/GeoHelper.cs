@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Windows.Devices.Geolocation;
-using Windows.UI.Popups;
 
 namespace LubCycle.UWP.Helpers
 {
-    class GeoHelper
+    internal class GeoHelper
     {
         // Calc distance using Geo-coordinates.
         private const double EQuatorialEarthRadius = 6378.1370D;
+
         private const double D2R = (Math.PI / 180D);
 
         /// <summary>
@@ -32,7 +26,6 @@ namespace LubCycle.UWP.Helpers
             return d;
         }
 
-
         /// <summary>
         ///  Returns distance from A to B in km.
         /// </summary>
@@ -42,7 +35,7 @@ namespace LubCycle.UWP.Helpers
         /// <param name="lng2">Point B - Longitude</param>
         public static int CalcDistanceInMeters(double lat1, double lng1, double lat2, double lng2)
         {
-            return (int) (CalcDistanceInKilometers(lat1, lng1, lat2, lng2)*1000.0);
+            return (int)(CalcDistanceInKilometers(lat1, lng1, lat2, lng2) * 1000.0);
         }
     }
 }

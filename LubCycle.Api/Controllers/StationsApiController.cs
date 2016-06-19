@@ -1,12 +1,9 @@
-using System;
+using LubCycle.Core.Models.NextBike;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using LubCycle.Core.Models.NextBike;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing.Template;
 
 namespace LubCycle.Api.Controllers
 {
@@ -15,25 +12,20 @@ namespace LubCycle.Api.Controllers
     public class StationsApiController : Controller
     {
         private Core.Helpers.NextBikeHelper _nextBikeHelper;
+
         public StationsApiController(Core.Helpers.NextBikeHelper nextBikeHelper)
         {
             this._nextBikeHelper = nextBikeHelper;
         }
 
-        [HttpGet]
-        public async Task<List<Place>> GetStationsAsync()
-        {
-            return await _nextBikeHelper.GetStationsAsync();
-        }
-
         [HttpGet("station-number/{number}")]
-        [ProducesResponseType(typeof(Place),(int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Place), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetStationByStationNumberAsync(int number)
         {
             var obj = (await GetStationsAsync()).FirstOrDefault(x => x.Number == number);
             if (obj == null)
             {
-                return BadRequest(new {error_message="Station not found"});
+                return BadRequest(new { error_message = "Station not found" });
             }
             else
             {
@@ -54,6 +46,12 @@ namespace LubCycle.Api.Controllers
             {
                 return Ok(obj);
             }
+        }
+
+        [HttpGet]
+        public async Task<List<Place>> GetStationsAsync()
+        {
+            return await _nextBikeHelper.GetStationsAsync();
         }
     }
 }

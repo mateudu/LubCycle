@@ -1,29 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using LubCycle.Core.Models;
+using LubCycle.Core.Models.GoogleMaps;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using LubCycle.Core;
-using LubCycle.Core.Models;
-using LubCycle.Core.Models.GoogleMaps;
-using LubCycle.Core.Models.Navigation;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 
 namespace LubCycle.DbSeed
 {
     public class Program
     {
-        private static IConfigurationRoot Configuration { get; set; }
-
-        private static double MaxDistanceSqrt { get; set; }
-        private static double MaxSingleDuration { get; set; }
         public static string AppDatabaseConnectionString { get; private set; }
         private static string BingMapsApiKey { get; set; }
-        private static string GoogleMapsApiKey { get; set; }
         private static string CityUids { get; set; }
+        private static IConfigurationRoot Configuration { get; set; }
 
+        private static string GoogleMapsApiKey { get; set; }
+        private static double MaxDistanceSqrt { get; set; }
+        private static double MaxSingleDuration { get; set; }
 
         public static void Main(string[] args)
         {
@@ -59,8 +54,8 @@ namespace LubCycle.DbSeed
                                 if (obj != null
                                     && double.TryParse(obj.duration.value.ToString(), out dur)
                                     && double.TryParse(obj.distance.value.ToString(), out dist)
-                                    && (double) dist < MaxDistanceSqrt*1000.0
-                                    && (double) dur < MaxSingleDuration)
+                                    && (double)dist < MaxDistanceSqrt * 1000.0
+                                    && (double)dur < MaxSingleDuration)
                                 {
                                     Console.WriteLine($"{i}:{j} {places[i].Name}<=>{places[j].Name}, {counter++}");
                                     db.TravelDurations.Add(new TravelDuration()
@@ -70,7 +65,7 @@ namespace LubCycle.DbSeed
                                         Station1Uid = places[i].Uid,
                                         Station2Uid = places[j].Uid
                                     });
-                                    if (counter%50 == 0)
+                                    if (counter % 50 == 0)
                                     {
                                         //Save every 50 entities.
                                         await db.SaveChangesAsync();
@@ -91,6 +86,7 @@ namespace LubCycle.DbSeed
 
             Console.ReadLine();
         }
+
         private static void ConfigureSettings()
         {
             string buffer;

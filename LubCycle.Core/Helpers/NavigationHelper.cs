@@ -1,9 +1,8 @@
-﻿using System;
+﻿using LubCycle.Core.Models.Navigation;
+using LubCycle.Core.Models.NextBike;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using LubCycle.Core.Models.Navigation;
-using LubCycle.Core.Models.NextBike;
 
 namespace LubCycle.Core.Helpers
 {
@@ -43,7 +42,7 @@ namespace LubCycle.Core.Helpers
                 }
                 foreach (RouteStatistic t in RouteStatistics)
                 {
-                    if (t.Duration <= MaximalSingleDuration && t.Distance<= MaximalSingleDistance)
+                    if (t.Duration <= MaximalSingleDuration && t.Distance <= MaximalSingleDistance)
                     {
                         from = _edges[t.Station1Uid];
                         to = _edges[t.Station2Uid];
@@ -108,7 +107,7 @@ namespace LubCycle.Core.Helpers
                 }
 
                 QS[u] = true;
-                
+
                 for (int k = 0; k < _graph[u].Count; k++)
                 {
                     var pw = _graph[u][k];
@@ -122,13 +121,15 @@ namespace LubCycle.Core.Helpers
 
             for (j = _edges[destUid]; j > -1; j = P[j])
                 S[sptr++] = j;
-            #endregion
+
+            #endregion Dijkstra Algorithm
+
             var result = new List<Place>();
             while (sptr > 0)
             {
                 result.Add(Stations[S[--sptr]]);
             }
-            
+
             return result;
         }
 
@@ -149,7 +150,7 @@ namespace LubCycle.Core.Helpers
                 };
             }
 
-            var startStation = GetStation(start,numberType);
+            var startStation = GetStation(start, numberType);
             var destStation = GetStation(dest, numberType);
 
             if (startStation == null || destStation == null)
@@ -160,7 +161,6 @@ namespace LubCycle.Core.Helpers
                     Message = "'startUid'/'destUid' is incorrect."
                 };
             }
-
 
             var stations = CalcRoute(startStation.Uid, destStation.Uid);
             double duration = 0, distance = 0;
@@ -207,8 +207,10 @@ namespace LubCycle.Core.Helpers
             {
                 case StationNumberType.StationNumber:
                     return Stations.FirstOrDefault(x => x.Number.ToString() == number);
+
                 case StationNumberType.StationUid:
                     return Stations.FirstOrDefault(x => x.Uid == number);
+
                 default:
                     return null;
             }

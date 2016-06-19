@@ -1,12 +1,10 @@
-﻿using System;
+﻿using LubCycle.Core.Models.NextBike;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using LubCycle.Core.Models.NextBike;
-using LubCycle.Core.Models;
 
 namespace LubCycle.Core.Helpers
 {
@@ -17,15 +15,15 @@ namespace LubCycle.Core.Helpers
         private readonly IEnumerable<string> _cityUids;
         private readonly TimeSpan _updateSpan;
 
-        public NextBikeHelper(IEnumerable<string> cityUids, double updateSpan=15)
+        public NextBikeHelper(IEnumerable<string> cityUids, double updateSpan = 15)
         {
             this._cityUids = cityUids;
             this._updateSpan = TimeSpan.FromSeconds(updateSpan);
         }
 
-        public NextBikeHelper(string cityUids, double updateSpan=15) : this(cityUids.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries),updateSpan)
-        {   }
-        
+        public NextBikeHelper(string cityUids, double updateSpan = 15) : this(cityUids.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries), updateSpan)
+        { }
+
         /// <summary>
         ///  Returns NextBike info. Updates every 15 seconds.
         /// </summary>

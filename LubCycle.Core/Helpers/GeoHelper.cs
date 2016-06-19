@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using LubCycle.Core.Models;
-using LubCycle.Core.Models.Navigation;
-using LubCycle.Core.Models.NextBike;
 
 namespace LubCycle.Core.Helpers
 {
     public class GeoHelper
     {
-        // Invoke 'LoadGraph()' method before calling 'GetRoute()'! 
+        // Invoke 'LoadGraph()' method before calling 'GetRoute()'!
         //private async Task LoadGraph()
         //{
         //    if (Core.GeoHelper.TravelDurations == null || Core.GeoHelper.TravelDurations.Count == 0)
@@ -26,6 +20,7 @@ namespace LubCycle.Core.Helpers
 
         // Calc distance using Geo-coordinates.
         private const double EQuatorialEarthRadius = 6378.1370D;
+
         private const double D2R = (Math.PI / 180D);
 
         /// <summary>

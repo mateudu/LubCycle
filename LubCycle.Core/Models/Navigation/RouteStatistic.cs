@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace LubCycle.Core.Models.Navigation
+﻿namespace LubCycle.Core.Models.Navigation
 {
     public class RouteStatistic
     {

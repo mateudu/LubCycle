@@ -1,18 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 using LubCycle.Api.Data;
-using LubCycle.Core;
 using LubCycle.Core.Helpers;
-using LubCycle.Core.Models;
 using LubCycle.Core.Models.Navigation;
-using LubCycle.Core.Models.NextBike;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace LubCycle.Api.Controllers
 {
@@ -29,22 +19,22 @@ namespace LubCycle.Api.Controllers
             _navHelper = navHelper;
         }
 
-        [HttpGet("station-uid/{startUid}/{destUid}")]
-        [ProducesResponseType(typeof(Core.Models.Navigation.Route),(int)HttpStatusCode.OK)]
-        public IActionResult GetRouteByStationUid(string startUid, string destUid)
+        [HttpGet("station-number/{startNumber}/{destNumer}")]
+        [ProducesResponseType(typeof(Core.Models.Navigation.Route), (int)HttpStatusCode.OK)]
+        public IActionResult GetRouteByStationNumber(string startNumber, string destNumer)
         {
-            var result = _navHelper.GetRoute(startUid, destUid, StationNumberType.StationUid);
+            var result = _navHelper.GetRoute(startNumber, destNumer, StationNumberType.StationNumber);
             if (result.Status == RouteStatus.IncorrectArguments)
                 return BadRequest(result);
 
             return Ok(result);
         }
 
-        [HttpGet("station-number/{startNumber}/{destNumer}")]
+        [HttpGet("station-uid/{startUid}/{destUid}")]
         [ProducesResponseType(typeof(Core.Models.Navigation.Route), (int)HttpStatusCode.OK)]
-        public IActionResult GetRouteByStationNumber(string startNumber, string destNumer)
+        public IActionResult GetRouteByStationUid(string startUid, string destUid)
         {
-            var result = _navHelper.GetRoute(startNumber, destNumer, StationNumberType.StationNumber);
+            var result = _navHelper.GetRoute(startUid, destUid, StationNumberType.StationUid);
             if (result.Status == RouteStatus.IncorrectArguments)
                 return BadRequest(result);
 

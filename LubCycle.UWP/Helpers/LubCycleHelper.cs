@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using LubCycle.UWP.Models;
+﻿using LubCycle.UWP.Models;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace LubCycle.UWP.Helpers
 {
-    class LubCycleHelper
+    internal class LubCycleHelper
     {
         private readonly string _serviceUrl = @"http://lubcycle.cloudapp.net";
         private readonly HttpClient _client = new HttpClient();

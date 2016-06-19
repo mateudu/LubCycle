@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.Background;
-using Windows.Data.Xml.Dom;
 using Windows.Devices.Geolocation;
 using Windows.Services.Maps;
-using Windows.UI.Notifications;
 
 namespace LubCycle.UWP.Helpers
 {
@@ -27,7 +21,7 @@ namespace LubCycle.UWP.Helpers
         private static CancellationTokenSource CancellationTokenSource { get; set; }
 
         /// <summary>
-        /// Initializes the LocationHelper. 
+        /// Initializes the LocationHelper.
         /// </summary>
         static LocationHelper()
         {

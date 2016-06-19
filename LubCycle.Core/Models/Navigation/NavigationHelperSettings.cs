@@ -1,8 +1,5 @@
-﻿using System;
+﻿using LubCycle.Core.Models.NextBike;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using LubCycle.Core.Models.NextBike;
 
 namespace LubCycle.Core.Models.Navigation
 {

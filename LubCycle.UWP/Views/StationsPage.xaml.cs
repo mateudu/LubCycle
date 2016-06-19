@@ -1,28 +1,17 @@
-﻿using System;
+﻿using LubCycle.UWP.Helpers;
+using LubCycle.UWP.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading;
 using System.Threading.Tasks;
+using Template10.Utils;
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.System;
-using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Maps;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-using LubCycle.UWP.Helpers;
-using LubCycle.UWP.Models;
-using Template10.Utils;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -33,12 +22,12 @@ namespace LubCycle.UWP.Views
     /// </summary>
     public sealed partial class StationsPage : Page
     {
-        Template10.Services.SerializationService.ISerializationService _SerializationService;
+        private Template10.Services.SerializationService.ISerializationService _SerializationService;
         public readonly int[] BikeCountItems = new[] { 0, 1, 2, 3, 4, 5 };
         private int _selectedBikes = 0;
 
         private readonly LubCycleHelper _lubcycle = new LubCycleHelper();
-        readonly ObservableCollection<StationsListViewItem> MapItemsSource = new ObservableCollection<StationsListViewItem>();
+        private readonly ObservableCollection<StationsListViewItem> MapItemsSource = new ObservableCollection<StationsListViewItem>();
         private List<StationsListViewItem> StationsListViewItems = new List<StationsListViewItem>();
         private List<Place> _stations = new List<Place>();
         private Geoposition _position = null;
@@ -110,7 +99,7 @@ namespace LubCycle.UWP.Views
                         Distance = GeoHelper.CalcDistanceInMeters(
                             _position.Coordinate.Latitude,
                             _position.Coordinate.Longitude,
-                            obj.Lat, 
+                            obj.Lat,
                             obj.Lng)
                     });
             }

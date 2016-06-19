@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Xml.Serialization;
-using LubCycle.Core.Models.NextBike;
 
 namespace LubCycle.Core.Models.NextBike
 {
     [XmlRoot(ElementName = "country")]
     public class Country
     {
-
         [XmlAttribute(AttributeName = "lat")]
         public double Lat { get; set; }
 
