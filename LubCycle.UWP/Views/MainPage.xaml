@@ -62,9 +62,9 @@
             
             <!--  secondary commands  -->
             <controls:PageHeader.SecondaryCommands>
-                <AppBarButton Click="{x:Bind ViewModel.GotoSettings}" Label="Settings" />
-                <AppBarButton Click="{x:Bind ViewModel.GotoPrivacy}" Label="Privacy" />
-                <AppBarButton Click="{x:Bind ViewModel.GotoAbout}" Label="About" />
+                <AppBarButton Click="{x:Bind ViewModel.GotoSettings}" Label="Ustawienia" />
+                <!--<AppBarButton Click="{x:Bind ViewModel.GotoPrivacy}" Label="Privacy" />-->
+                <AppBarButton Click="{x:Bind ViewModel.GotoAbout}" Label="O aplikacji" />
             </controls:PageHeader.SecondaryCommands>
 
         </controls:PageHeader>

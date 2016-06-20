@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.System;
 using Template10.Mvvm;
 using Template10.Services.SettingsService;
 using Windows.UI.Xaml;
@@ -60,6 +61,9 @@ namespace LubCycle.UWP.ViewModels
                 await Task.Delay(5000);
                 Views.Busy.SetBusy(false);
             }, () => !string.IsNullOrEmpty(BusyText)));
+
+        public async Task GotoLocationSettings() =>
+            await Launcher.LaunchUriAsync(new Uri("ms-settings:privacy-location"));
     }
 
     public class AboutPartViewModel : ViewModelBase

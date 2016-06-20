@@ -18,7 +18,7 @@
     <Page.DataContext>
         <vm:StationsPageViewModel x:Name="ViewModel" />
     </Page.DataContext>
-
+    
     <RelativePanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="AdaptiveVisualStateGroup">
@@ -54,20 +54,22 @@
                              RelativePanel.AlignTopWithPanel="True" Text="Stacje">
 
             <controls:PageHeader.PrimaryCommands>
-                <AppBarButton x:Name="filterButton" Icon="Filter" Label="Filtruj">
+                <AppBarButton x:Name="filterButton" Icon="Filter" Label="Filtruj"
+                              IsEnabled="{x:Bind ViewModel.FilterButtonEnabled, Mode=OneWay}">
                     <AppBarButton.Flyout>
                         <Flyout Placement="Bottom">
                             <Flyout.Content>
                                 <ComboBox x:Name="bikeCountPicker"
                                           Header="Ilość rowerów"
-                                          ItemsSource="{x:Bind BikeCountItems}"
-                                          SelectionChanged="BikeCountPicker_OnSelectionChanged" />
+                                          ItemsSource="{x:Bind ViewModel.BikeCountItems}"
+                                          SelectionChanged="{x:Bind ViewModel.BikeCountPicker_OnSelectionChanged}" />
                             </Flyout.Content>
                         </Flyout>
                     </AppBarButton.Flyout>
                 </AppBarButton>
                 <AppBarButton x:Name="refreshButton" Icon="Refresh" Label="Odświerz"
-                              Click="RefreshButton_OnClick" />
+                              Click="{x:Bind ViewModel.RefreshButton_OnClick}" 
+                              IsEnabled="{x:Bind ViewModel.RefreshButtonEnabled, Mode=OneWay}"/>
             </controls:PageHeader.PrimaryCommands>
 
             <!--secondary commands-->
@@ -99,24 +101,22 @@
                             BusinessLandmarksVisible="True"
                             LandmarksVisible="True"
                             PedestrianFeaturesVisible="True">
-                    <maps:MapItemsControl ItemsSource="{x:Bind MapItemsSource}">
+                    <maps:MapItemsControl ItemsSource="{x:Bind ViewModel.MapItemsSource, Mode=OneWay}">
                         <maps:MapItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="models:StationsListViewItem">
-                                <StackPanel maps:MapControl.NormalizedAnchorPoint="{x:Bind AnchorPoint}"
+                                <StackPanel maps:MapControl.NormalizedAnchorPoint="{x:Bind AnchorPoint, Mode=OneWay}"
                                             maps:MapControl.Location="{x:Bind Geopoint, Mode=OneWay}">
                                     <StackPanel Background="{ThemeResource CustomColorBrush}" MaxWidth="120">
-                                        <TextBlock Text="{x:Bind Station.Name}" FontSize="10"
+                                        <TextBlock Text="{x:Bind Station.Name, Mode=OneWay}" FontSize="10"
                                                    TextWrapping="WrapWholeWords"
                                                    Foreground="{ThemeResource ContrastColorBrush}"
                                                    Padding="5,5,5,0" />
-                                        <StackPanel Orientation="Horizontal" Padding="5,0,0,5">
-                                            <TextBlock Text="Rowery:" FontSize="8"
+                                        <TextBlock Padding="5,0,0,5" FontSize="8"
                                                    Foreground="{ThemeResource ContrastColorBrush}"
-                                                   Opacity="0.8" />
-                                            <TextBlock Text="{x:Bind Station.Bikes}" FontSize="8"
-                                                   Foreground="{ThemeResource ContrastColorBrush}"
-                                                   Opacity="0.8" />
-                                        </StackPanel>
+                                                   Opacity="0.8" >
+                                            <Run>Rowery:</Run>
+                                            <Run Text="{x:Bind Station.Bikes, Mode=OneWay}"/>
+                                        </TextBlock>
                                     </StackPanel>
                                     <Polygon Points="0,0 30,0 0,50" Fill="{ThemeResource CustomColorBrush}" />
                                 </StackPanel>
@@ -127,10 +127,10 @@
             </Grid>
             <ListView x:Name="StationsListView"
                       Grid.Row="1"
-                      ItemsSource="{x:Bind MapItemsSource}"
+                      ItemsSource="{x:Bind ViewModel.MapItemsSource, Mode=OneWay}"
                       HorizontalAlignment="Stretch"
                       VerticalAlignment="Stretch"
-                      SelectionChanged="StationsListView_OnSelectionChanged">
+                      SelectionChanged="{x:Bind ViewModel.StationsListView_OnSelectionChanged}">
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -147,16 +147,16 @@
                                         Orientation="Vertical"
                                         HorizontalAlignment="Stretch">
                                 <TextBlock FontSize="15" FontWeight="SemiBold" Text="{x:Bind Station.Name}" />
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock FontSize="12" Text="Rowery:" />
-                                    <TextBlock FontSize="12" Text="{x:Bind Station.Bikes}" />
-                                </StackPanel>
+                                <TextBlock FontSize="12">
+                                    <Run>Rowery:</Run>
+                                    <Run Text="{x:Bind Station.Bikes, Mode=OneWay}"/>
+                                </TextBlock>
                             </StackPanel>
-                            <StackPanel Grid.Column="1" Orientation="Horizontal"
-                                        HorizontalAlignment="Right">
-                                <TextBlock Text="{x:Bind Distance}" />
-                                <TextBlock Text="m" />
-                            </StackPanel>
+                            <TextBlock Grid.Column="1"
+                                       HorizontalAlignment="Right">
+                                <Run Text="{x:Bind Distance, Mode=OneWay}"/>
+                                <Run>m</Run>
+                            </TextBlock>
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>

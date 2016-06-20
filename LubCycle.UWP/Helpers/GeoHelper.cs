@@ -9,14 +9,8 @@ namespace LubCycle.UWP.Helpers
 
         private const double D2R = (Math.PI / 180D);
 
-        /// <summary>
-        ///  Returns distance from A to B in km.
-        /// </summary>
-        /// <param name="lat1">Point A - Latitude</param>
-        /// <param name="lng1">Point A - Longitude</param>
-        /// <param name="lat2">Point B - Latitude</param>
-        /// <param name="lng2">Point B - Longitude</param>
-        public static double CalcDistanceInKilometers(double lat1, double lng1, double lat2, double lng2)
+        
+        private static double CalcDistanceInKilometers(double lat1, double lng1, double lat2, double lng2)
         {
             double dlong = (lng2 - lng1) * D2R;
             double dlat = (lat2 - lat1) * D2R;
@@ -33,7 +27,26 @@ namespace LubCycle.UWP.Helpers
         /// <param name="lng1">Point A - Longitude</param>
         /// <param name="lat2">Point B - Latitude</param>
         /// <param name="lng2">Point B - Longitude</param>
-        public static int CalcDistanceInMeters(double lat1, double lng1, double lat2, double lng2)
+        public static double CalcDistanceInKilometers(double? lat1, double? lng1, double? lat2, double? lng2)
+        {
+            if (!lat1.HasValue || !lng1.HasValue || !lat2.HasValue || !lng2.HasValue)
+            {
+                return 0;
+            }
+            else
+            {
+                return CalcDistanceInKilometers(lat1.Value, lng1.Value, lat2.Value, lng2.Value);
+            }
+        }
+
+        /// <summary>
+        ///  Returns distance from A to B in meters.
+        /// </summary>
+        /// <param name="lat1">Point A - Latitude</param>
+        /// <param name="lng1">Point A - Longitude</param>
+        /// <param name="lat2">Point B - Latitude</param>
+        /// <param name="lng2">Point B - Longitude</param>
+        public static int CalcDistanceInMeters(double? lat1, double? lng1, double? lat2, double? lng2)
         {
             return (int)(CalcDistanceInKilometers(lat1, lng1, lat2, lng2) * 1000.0);
         }

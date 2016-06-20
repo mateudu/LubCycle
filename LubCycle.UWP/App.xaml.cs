@@ -9,6 +9,7 @@ using System.Linq;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
+using LubCycle.UWP.Helpers;
 
 namespace LubCycle.UWP
 {
@@ -54,6 +55,7 @@ namespace LubCycle.UWP
         public override async Task OnStartAsync(StartKind startKind, IActivatedEventArgs args)
         {
             // long-running startup tasks go here
+            var locationTask = LocationHelper.GetCurrentLocationAsync();
             await Task.Delay(5000);
 
             NavigationService.Navigate(typeof(Views.MainPage));
