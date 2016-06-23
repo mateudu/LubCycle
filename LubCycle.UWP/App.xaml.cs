@@ -7,6 +7,7 @@ using Template10.Common;
 using System;
 using System.Linq;
 using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using LubCycle.UWP.Helpers;
@@ -23,7 +24,7 @@ namespace LubCycle.UWP
         {
             InitializeComponent();
             SplashFactory = (e) => new Views.Splash(e);
-
+            //ApplicationView.PreferredLaunchWindowingMode=ApplicationViewWindowingMode.Auto;
             #region App settings
 
             var _settings = SettingsService.Instance;
@@ -56,7 +57,7 @@ namespace LubCycle.UWP
         {
             // long-running startup tasks go here
             var locationTask = LocationHelper.GetCurrentLocationAsync();
-            await Task.Delay(5000);
+            await Task.Delay(2000);
 
             NavigationService.Navigate(typeof(Views.MainPage));
 

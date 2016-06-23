@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LubCycle.UWP</RootNamespace>
     <AssemblyName>LubCycle.UWP</AssemblyName>
-    <DefaultLanguage>en-US</DefaultLanguage>
+    <DefaultLanguage>pl-PL</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
@@ -92,14 +92,18 @@
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
     <None Include="LubCycle.UWP_TemporaryKey.pfx" />
     <None Include="project.json" />
+    <PRIResource Include="Strings\pl-PL\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CacheData.cs" />
     <Compile Include="Helpers\GeoHelper.cs" />
+    <Compile Include="Helpers\ListHelper.cs" />
     <Compile Include="Helpers\LocationHelper.cs" />
     <Compile Include="Helpers\LubCycleHelper.cs" />
+    <Compile Include="Models\LocationResponse.cs" />
     <Compile Include="Models\Place.cs" />
     <Compile Include="Models\Route.cs" />
     <Compile Include="Models\StationsListViewItem.cs" />

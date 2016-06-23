@@ -14,6 +14,10 @@ namespace LubCycle.UWP.Views
         {
             InitializeComponent();
             NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
+            stationsMap.MapServiceToken = StaticData.MapServiceToken;
+            stationsMap.Center = StaticData.DefaultMapCenter;
+            stationsMap.ZoomLevel = 15.0;
+            ViewModel.MapControl = stationsMap;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -31,6 +35,10 @@ namespace LubCycle.UWP.Views
             App.Current.Exit();
         }
 
-        
+
+        private void MainPage_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            ViewModel.MainPage_OnLoaded(sender,e);
+        }
     }
 }

@@ -9,6 +9,7 @@ namespace LubCycle.Api.Controllers
 {
     [Produces("application/json")]
     [Route("api/route")]
+    [ResponseCache(CacheProfileName = "StationsCaching")]
     public class ApiRouteController : Controller
     {
         private readonly NextBikeHelper _nextBikeHelper;

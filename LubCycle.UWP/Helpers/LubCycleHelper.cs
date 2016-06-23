@@ -22,7 +22,7 @@ namespace LubCycle.UWP.Helpers
                 var obj = JsonConvert.DeserializeObject<List<Place>>(response);
                 return obj;
             }
-            catch (Exception exc)
+            catch (Exception)
             {
                 return null;
             }
@@ -38,7 +38,23 @@ namespace LubCycle.UWP.Helpers
                 var obj = JsonConvert.DeserializeObject<Route>(response);
                 return obj;
             }
-            catch (Exception exc)
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public async Task<LocationResponse> GetLocationAsync(string query)
+        {
+            try
+            {
+                var url = new Uri($"{_serviceUrl}/api/location/query/{query}");
+                var result = await _client.GetAsync(url);
+                var response = await result.Content.ReadAsStringAsync();
+                var obj = JsonConvert.DeserializeObject<LocationResponse>(response);
+                return obj;
+            }
+            catch (Exception)
             {
                 return null;
             }

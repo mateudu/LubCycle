@@ -8,7 +8,11 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="using:LubCycle.UWP.Views"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:vm="using:LubCycle.UWP.ViewModels" mc:Ignorable="d">
+      xmlns:vm="using:LubCycle.UWP.ViewModels"
+      xmlns:maps="using:Windows.UI.Xaml.Controls.Maps"
+      xmlns:models="using:LubCycle.UWP.Models"
+      mc:Ignorable="d"
+      Loaded="MainPage_OnLoaded">
 
     <Page.DataContext>
         <vm:MainPageViewModel x:Name="ViewModel" />
@@ -16,10 +20,10 @@
     
     <!--<RelativePanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">-->
     <RelativePanel>
-        <RelativePanel.Background>
+        <!--<RelativePanel.Background>
             <ImageBrush ImageSource="../Assets/lublin_landing.jpg"
                         Opacity="0.4" Stretch="UniformToFill"/>
-        </RelativePanel.Background>
+        </RelativePanel.Background>-->
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="AdaptiveVisualStateGroup">
                 <VisualState x:Name="VisualStateNarrow">
@@ -68,7 +72,68 @@
             </controls:PageHeader.SecondaryCommands>
 
         </controls:PageHeader>
+        <Grid RelativePanel.Below="pageHeader"
+              RelativePanel.AlignLeftWithPanel="True"
+              RelativePanel.AlignRightWithPanel="True"
+              RelativePanel.AlignBottomWithPanel="True">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <maps:MapControl x:Name="stationsMap"
+                            Grid.Row="0"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            BusinessLandmarksVisible="True"
+                            LandmarksVisible="True"
+                            PedestrianFeaturesVisible="True">
+                <maps:MapItemsControl ItemsSource="{x:Bind ViewModel.MapItemsSource, Mode=OneWay}">
+                    <maps:MapItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="models:StationsListViewItem">
+                            <StackPanel maps:MapControl.NormalizedAnchorPoint="{x:Bind AnchorPoint, Mode=OneWay}"
+                                            maps:MapControl.Location="{x:Bind Geopoint, Mode=OneWay}">
+                                <StackPanel Background="{ThemeResource CustomColorBrush}" MaxWidth="120">
+                                    <TextBlock Text="{x:Bind Station.Name, Mode=OneWay}" FontSize="10"
+                                                   TextWrapping="WrapWholeWords"
+                                                   Foreground="{ThemeResource ContrastColorBrush}"
+                                                   Padding="5,5,5,0" />
+                                    <TextBlock Padding="5,0,0,5" FontSize="8"
+                                                   Foreground="{ThemeResource ContrastColorBrush}"
+                                                   Opacity="0.8" >
+                                            <Run>Rowery:</Run>
+                                            <Run Text="{x:Bind Station.Bikes, Mode=OneWay}"/>
+                                    </TextBlock>
+                                </StackPanel>
+                                <Polygon Points="0,0 30,0 0,50" Fill="{ThemeResource CustomColorBrush}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </maps:MapItemsControl.ItemTemplate>
+                </maps:MapItemsControl>
+            </maps:MapControl>
+            <StackPanel RelativePanel.AlignVerticalCenterWithPanel="True"
+                    RelativePanel.AlignLeftWithPanel="True"
+                    RelativePanel.AlignRightWithPanel="True"
+                    Padding="5"
+                    Grid.Row="1">
 
+                <AutoSuggestBox 
+                x:Uid="MainPage_AddressTB"
+                HorizontalAlignment="Stretch"
+                Text="{x:Bind ViewModel.AddressSearch, Mode=TwoWay}"
+                TextChanged="{x:Bind ViewModel.AddressSearchASB_OnTextChanged, Mode=OneWay}"/>
+                <Button
+                Margin="0,5,0,0"
+                HorizontalAlignment="Stretch"
+                Content="Szukaj"
+                Background="{StaticResource CustomColorBrush}"
+                Foreground="{StaticResource ContrastColorBrush}"
+                IsEnabled="{x:Bind ViewModel.SearchButtonEnabled, Mode=OneWay}"
+                Click="{x:Bind ViewModel.SearchButton_OnClick, Mode=OneWay}"
+                Opacity="1.0"
+                />
+            </StackPanel>
+        </Grid>
+        
         <!--<controls:Resizer x:Name="parameterResizer" Margin="16,16,16,0"
                           RelativePanel.AlignLeftWithPanel="True"
                           RelativePanel.Below="pageHeader">

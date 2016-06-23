@@ -32,7 +32,6 @@ namespace LubCycle.UWP.ViewModels
             Position = null;
             StationsListViewItems = new List<StationsListViewItem>();
             _lubcycle = new LubCycleHelper();
-            _stations = new List<Place>();
         }
         private string _Value = "Default";
         public string Value { get { return _Value; } set { Set(ref _Value, value); } }
@@ -66,10 +65,9 @@ namespace LubCycle.UWP.ViewModels
         ///////////////////////////////////////////////////////
         public readonly int[] BikeCountItems = new[] { 0, 1, 2, 3, 4, 5 };
         private readonly LubCycleHelper _lubcycle;
-        private List<Place> _stations;
         private Geoposition position;
         private int selectedBikes = 0;
-        public readonly ObservableCollection<StationsListViewItem> MapItemsSource;
+        public ObservableCollection<StationsListViewItem> MapItemsSource;
         private List<StationsListViewItem> StationsListViewItems;
 
         public MapControl MapControl;
@@ -93,12 +91,6 @@ namespace LubCycle.UWP.ViewModels
 
         public int SelectedBikes
         {
-            get { return SelectedBikes1; }
-            set { SelectedBikes1 = value; }
-        }
-
-        public int SelectedBikes1
-        {
             get { return selectedBikes; }
             set { selectedBikes = value; }
         }
@@ -109,18 +101,26 @@ namespace LubCycle.UWP.ViewModels
             set { position = value; }
         }
 
+        private bool _reloadRequested = false;
+
         public void BikeCountPicker_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             int? number = (sender as ComboBox).SelectedItem as int?;
             if (number.HasValue)
             {
                 SelectedBikes = number.Value;
-                ReloadList();
+                ListHelper.ReloadList(
+                    ref StationsListViewItems, 
+                    ref MapItemsSource, 
+                    item => int.Parse(item.Station.Bikes)>=SelectedBikes
+                    );
             }
         }
         public async void RefreshButton_OnClick(object sender, RoutedEventArgs e)
         {
+            _reloadRequested = true;
             await LoadPageAsync();
+            _reloadRequested = false;
         }
         public async Task StationsListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -142,8 +142,8 @@ namespace LubCycle.UWP.ViewModels
             {
                 RefreshButtonEnabled = false;
                 FilterButtonEnabled = false;
-                await LoadStationsAndPositionAsync();
-                ReloadList();
+                StationsListViewItems = await ListHelper.LoadStationsAndPositionAsync(_reloadRequested);
+                ListHelper.ReloadList(ref StationsListViewItems, ref MapItemsSource);
                 await MapControl.TrySetViewAsync(Position != null ? Position.Coordinate.Point : StaticData.DefaultMapCenter, 15.0);
                 
             }
@@ -156,66 +156,6 @@ namespace LubCycle.UWP.ViewModels
             {
                 RefreshButtonEnabled = true;
                 FilterButtonEnabled = true;
-            }
-        }
-
-        private void ReloadList()
-        {
-            MapControl.MapElements.Clear();
-            var obj = StationsListViewItems.Where(x => int.Parse(x.Station.Bikes) >= SelectedBikes).ToList();
-            obj.Sort((x, y) => x.Distance.CompareTo(y.Distance));
-            MapItemsSource.AddRange(obj, true);
-
-            if (Position != null)
-            {
-                var poi = new MapIcon { Location = Position.Coordinate.Point, NormalizedAnchorPoint = new Point(0.5, 1.0), Title = "Moja pozycja", ZIndex = 0 };
-                MapControl.MapElements.Add(poi);
-            }
-        }
-        private async Task LoadStationsAndPositionAsync()
-        {
-            var pos = LocationHelper.GetCurrentLocationAsync();
-            var stations = _lubcycle.GetStationsAsync();
-
-            await Task.WhenAll(pos, stations);
-            _stations = stations.Result ?? _stations;
-            Position = pos.Result ?? Position;
-
-            if (stations.Result == null)
-            {
-                try
-                {
-                    var dlg = new MessageDialog("Wystąpił problem z połączeniem z serwisem.");
-                    await dlg.ShowAsync();
-                }
-                catch (Exception)
-                {
-                    // ignored
-                }
-            }
-
-            StationsListViewItems.Clear();
-
-            foreach (var obj in _stations)
-            {
-                if (obj.Bikes == @"5+")
-                    obj.Bikes = "5";
-                StationsListViewItems.Add(
-                    new StationsListViewItem()
-                    {
-                        Geopoint = new Geopoint(
-                        new BasicGeoposition()
-                        {
-                            Latitude = obj.Lat,
-                            Longitude = obj.Lng,
-                        }),
-                        Station = obj,
-                        Distance = GeoHelper.CalcDistanceInMeters(
-                            Position?.Coordinate.Latitude,
-                            Position?.Coordinate.Longitude,
-                            obj.Lat,
-                            obj.Lng)
-                    });
             }
         }
     }
