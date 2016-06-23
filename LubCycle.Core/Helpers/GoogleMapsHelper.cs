@@ -1,24 +1,101 @@
 ﻿using LubCycle.Core.Models.NextBike;
 using Newtonsoft.Json;
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using LubCycle.Core.Models.GoogleMaps;
+using LubCycle.Core.Models.IMapHelper;
 
 namespace LubCycle.Core.Helpers
 {
-    public class GoogleMapsHelper
+    public class GoogleMapsHelper : IMapsHelper
     {
         private readonly string _apiKey;
-        private HttpClient client;
-
+        private HttpClient _client;
+        private readonly string _serviceUrl = @"https://maps.googleapis.com";
         public GoogleMapsHelper(string apiKey)
         {
             this._apiKey = apiKey;
+            _client = new HttpClient();
         }
 
-        public async Task<Core.Models.GoogleMaps.RootObject> GetDistanceAsync(double startLat, double startLng, double destLat, double destLng)
+        // IMapHelper implementation
+
+        public async Task<DistanceResponse> GetDistanceResponseAsync(double lat1, double lng1, double lat2, double lng2)
         {
-            var uri = new Uri($"https://maps.googleapis.com/maps/api/distancematrix/json" +
+            var response = await GetDistanceAsync(lat1, lng1, lat2, lng2);
+            var obj = response?.rows?.FirstOrDefault()?.elements?.FirstOrDefault();
+            if (obj != null)
+            {
+                double distance, duration;
+                double.TryParse(obj.duration.value.ToString(), out duration);
+                double.TryParse(obj.distance.value.ToString(), out distance);
+                return new DistanceResponse
+                {
+                    Distance = distance,
+                    Duration = duration
+                };
+            }
+
+            return null;
+        }
+
+        public async Task<LocationResponse> GetLocationResponseAsync(string query)
+        {
+            var uri = new Uri($"{_serviceUrl}/maps/api/geocode/json" +
+                              $"?address={query}" +
+                              $"&key={_apiKey}");
+
+            try
+            {
+                var response = await _client.GetAsync(uri);
+                var result = await response.Content.ReadAsStringAsync();
+                var obj = JsonConvert.DeserializeObject<Core.Models.GoogleMaps.GeoCode.RootObject>(result);
+
+                if (obj != null)
+                {
+                    switch (obj.status)
+                    {
+                        case "OK":
+                            var loc = obj?.results?.FirstOrDefault()?.geometry?.location;
+                            return new LocationResponse
+                            {
+                                Status = LocationResponseStatus.Ok,
+                                Message = obj.status,
+                                Lat = loc?.lat,
+                                Lng = loc?.lng
+                            };
+                        case "ZERO_RESULTS":
+                        case "OVER_QUERY_LIMIT":
+                        case "REQUEST_DENIED":
+                        case "INVALID_REQUEST":
+                        case "UNKNOWN_ERROR":
+                            return new LocationResponse
+                            {
+                                Status = LocationResponseStatus.BadRequest,
+                                Message = obj.status
+                            };
+                    }
+                }
+            }
+            catch (Exception exc)
+            {
+                // TODO: Log Google Maps API error.
+            }
+            
+            return new LocationResponse
+            {
+                Status = LocationResponseStatus.Error,
+                Message = "Internal error/unknown"
+            };
+        }
+
+        
+
+        private async Task<Models.GoogleMaps.DistanceMatrix.RootObject> GetDistanceAsync(double startLat, double startLng, double destLat, double destLng)
+        {
+            var uri = new Uri($"{_serviceUrl}/maps/api/distancematrix/json" +
                               $"?origins=" +
                               $"{startLat.ToString(System.Globalization.CultureInfo.InvariantCulture)}," +
                               $"{startLng.ToString(System.Globalization.CultureInfo.InvariantCulture)}" +
@@ -27,19 +104,11 @@ namespace LubCycle.Core.Helpers
                               $"{destLng.ToString(System.Globalization.CultureInfo.InvariantCulture)}" +
                               $"&mode=bicycling" +
                               $"&unites=metrics&key={_apiKey}");
-            if (client == null)
-            {
-                client = new HttpClient();
-            }
-            var response = (await client.GetAsync(uri));
-            var result = await response.Content.ReadAsStringAsync();
-            var obj = JsonConvert.DeserializeObject<Core.Models.GoogleMaps.RootObject>(result);
-            return obj;
-        }
 
-        public async Task<Core.Models.GoogleMaps.RootObject> GetDistanceAsync(Place start, Place dest)
-        {
-            return await GetDistanceAsync(start.Lat, start.Lng, dest.Lat, dest.Lng);
+            var response = (await _client.GetAsync(uri));
+            var result = await response.Content.ReadAsStringAsync();
+            var obj = JsonConvert.DeserializeObject<Models.GoogleMaps.DistanceMatrix.RootObject>(result);
+            return obj;
         }
     }
 }

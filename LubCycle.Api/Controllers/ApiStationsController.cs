@@ -9,11 +9,12 @@ namespace LubCycle.Api.Controllers
 {
     [Produces("application/json")]
     [Route("api/stations")]
-    public class StationsApiController : Controller
+    [ResponseCache(CacheProfileName = "StationsCaching")]
+    public class ApiStationsController : Controller
     {
         private Core.Helpers.NextBikeHelper _nextBikeHelper;
 
-        public StationsApiController(Core.Helpers.NextBikeHelper nextBikeHelper)
+        public ApiStationsController(Core.Helpers.NextBikeHelper nextBikeHelper)
         {
             this._nextBikeHelper = nextBikeHelper;
         }

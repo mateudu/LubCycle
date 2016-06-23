@@ -1,6 +1,7 @@
 ﻿using LubCycle.Core.Models.NextBike;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -25,37 +26,45 @@ namespace LubCycle.Core.Helpers
         { }
 
         /// <summary>
-        ///  Returns NextBike info. Updates every 15 seconds.
+        ///  Returns NextBike info.
         /// </summary>
         private async Task<Marker> GetNextbikeInfoAsync()
         {
-            if (DateTime.Now - _lastResponseTime > _updateSpan)
+            try
             {
-                var client = new HttpClient();
-                var response = await client.GetAsync(new Uri(@"http://nextbike.net/maps/nextbike-official.xml"));
-
-                using (Stream responseStream = await response.Content.ReadAsStreamAsync())
+                if (DateTime.Now - _lastResponseTime > _updateSpan)
                 {
-                    using (StreamReader reader = new StreamReader(responseStream))
-                    {
-                        XmlSerializer serializer = new XmlSerializer(typeof(Marker));
-                        Marker obj = (Marker)serializer.Deserialize(reader);
+                    var client = new HttpClient();
+                    var response = await client.GetAsync(new Uri(@"http://nextbike.net/maps/nextbike-official.xml"));
 
-                        _lastResponseInfo = obj;
-                        _lastResponseTime = DateTime.Now;
+                    using (Stream responseStream = await response.Content.ReadAsStreamAsync())
+                    {
+                        using (StreamReader reader = new StreamReader(responseStream))
+                        {
+                            XmlSerializer serializer = new XmlSerializer(typeof(Marker));
+                            Marker obj = (Marker)serializer.Deserialize(reader);
+
+                            _lastResponseInfo = obj;
+                            _lastResponseTime = DateTime.Now;
+                        }
                     }
                 }
+                return _lastResponseInfo;
             }
-            return _lastResponseInfo;
+            catch (Exception exc)
+            {
+                // TODO: Log NextBike API connection error.
+                Console.WriteLine($"{DateTime.Now} NextBike API connection error.");
+                return null;
+            }
         }
 
         /// <summary>
         ///  Returns stations
         /// </summary>
-        /// <param name="cityUid">List of cityUids</param>
         public async Task<List<Place>> GetStationsAsync()
         {
-            return (await GetNextbikeInfoAsync()).GetStations(_cityUids);
+            return (await GetNextbikeInfoAsync())?.GetStations(_cityUids);
         }
     }
 }

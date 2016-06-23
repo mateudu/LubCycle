@@ -1,11 +1,10 @@
-﻿using LubCycle.Core.Models;
-using LubCycle.Core.Models.GoogleMaps;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using System;
 using System.Globalization;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using LubCycle.Core.Helpers;
+using LubCycle.Core.Models.GoogleMaps.DistanceMatrix;
 
 namespace LubCycle.DbSeed
 {
@@ -17,7 +16,7 @@ namespace LubCycle.DbSeed
         private static IConfigurationRoot Configuration { get; set; }
 
         private static string GoogleMapsApiKey { get; set; }
-        private static double MaxDistanceSqrt { get; set; }
+        private static double MaxSingleDistance { get; set; }
         private static double MaxSingleDuration { get; set; }
 
         public static void Main(string[] args)
@@ -30,60 +29,78 @@ namespace LubCycle.DbSeed
                 .Build();
             ConfigureSettings();
 
-            Task.Run(async () =>
-            {
-                try
-                {
-                    var nextBike = new Core.Helpers.NextBikeHelper(CityUids);
-                    var places = await nextBike.GetStationsAsync();
-                    var google = new Core.Helpers.GoogleMapsHelper(GoogleMapsApiKey);
-                    var db = new AppDatabase();
-                    int counter = 0;
+            //Task.Run(async () =>
+            //{
+            //    try
+            //    {
+            //        var nextBike = new Core.Helpers.NextBikeHelper(CityUids);
+            //        var places = await nextBike.GetStationsAsync();
+            //        IMapsHelper mapsHelper = new GoogleMapsHelper(GoogleMapsApiKey);
+            //        var db = new AppDatabase();
+            //        int counter = 0;
 
-                    var client = new HttpClient();
-                    var obj = new Element();
-                    for (int i = 0; i < places.Count; i++)
-                    {
-                        for (int j = i + 1; j < places.Count; j++)
-                        {
-                            if (Core.Helpers.GeoHelper.CalcDistance(places[i], places[j]) < MaxDistanceSqrt)
-                            {
-                                var response = await google.GetDistanceAsync(places[i], places[j]);
-                                obj = response.rows.FirstOrDefault()?.elements?.FirstOrDefault();
-                                double dist, dur;
-                                if (obj != null
-                                    && double.TryParse(obj.duration.value.ToString(), out dur)
-                                    && double.TryParse(obj.distance.value.ToString(), out dist)
-                                    && (double)dist < MaxDistanceSqrt * 1000.0
-                                    && (double)dur < MaxSingleDuration)
-                                {
-                                    Console.WriteLine($"{i}:{j} {places[i].Name}<=>{places[j].Name}, {counter++}");
-                                    db.TravelDurations.Add(new TravelDuration()
-                                    {
-                                        Distance = dist,
-                                        Duration = dur,
-                                        Station1Uid = places[i].Uid,
-                                        Station2Uid = places[j].Uid
-                                    });
-                                    if (counter % 50 == 0)
-                                    {
-                                        //Save every 50 entities.
-                                        await db.SaveChangesAsync();
-                                        Console.WriteLine("================= SAVED " + counter + " ==================");
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    Console.WriteLine($"SAVED {counter} ENTITIES.");
-                    await db.SaveChangesAsync();
-                }
-                catch (Exception exc)
-                {
-                    Console.WriteLine(exc.Message);
-                }
-            });
+            //        var client = new HttpClient();
+            //        var obj = new Element();
+            //        for (int i = 0; i < places.Count; i++)
+            //        {
+            //            for (int j = i + 1; j < places.Count; j++)
+            //            {
+            //                if (Core.Helpers.GeoHelper.CalcDistanceInMeters(
+            //                    places[i].Lat,
+            //                    places[i].Lng,
+            //                    places[j].Lat,
+            //                    places[j].Lng) <= MaxSingleDistance)
+            //                {
+            //                    var dr = await mapsHelper.GetDistanceResponseAsync(
+            //                    places[i].Lat,
+            //                    places[i].Lng,
+            //                    places[j].Lat,
+            //                    places[j].Lng);
+            //                    if (dr.Distance.HasValue && dr.Duration.HasValue)
+            //                    {
+            //                        if (dr.Distance.Value <= MaxSingleDistance &&
+            //                            dr.Duration.Value <= MaxSingleDuration)
+            //                        {
+            //                            Console.WriteLine($"{i}:{j} {places[i].Name}<=>{places[j].Name}, {counter++}");
+                                        
+            //                            // UNCOMMENT THESE LINES BELOW
+                                        
+            //                            //db.TravelDurations.Add(new TravelDuration()
+            //                            //{
+            //                            //    Distance = dr.Distance.Value,
+            //                            //    Duration = dr.Duration.Value,
+            //                            //    Station1Uid = places[i].Uid,
+            //                            //    Station2Uid = places[j].Uid
+            //                            //});
+            //                            if (counter % 50 == 0)
+            //                            {
+            //                                //Save every 50 entities.
 
+            //                                // UNCOMMENT THESE LINES BELOW
+
+            //                                //await db.SaveChangesAsync();
+            //                                //Console.WriteLine("================= SAVED " + counter + " ==================");
+            //                            }
+            //                        }
+            //                    }
+            //                }
+            //            }
+            //        }
+            //        Console.WriteLine($"SAVED {counter} ENTITIES.");
+
+            //        // UNCOMMENT THESE LINES BELOW
+
+            //        //await db.SaveChangesAsync();
+            //    }
+            //    catch (Exception exc)
+            //    {
+            //        Console.WriteLine(exc.Message);
+            //    }
+            //});
+
+            IMapsHelper maps = new GoogleMapsHelper(GoogleMapsApiKey);
+            var result = maps.GetLocationResponseAsync(@"Lublin Jantarowa 5").Result;
+            Console.WriteLine($"{result.Status} {result.Lat} {result.Lng}");
             Console.ReadLine();
         }
 
@@ -91,12 +108,12 @@ namespace LubCycle.DbSeed
         {
             string buffer;
 
-            buffer = Configuration["MAX_DISTANCE_SQRT"];
+            buffer = Configuration["MAX_SINGLE_DISTANCE_METERS"];
             if (String.IsNullOrWhiteSpace(buffer))
-                throw new ArgumentNullException("MAX_DISTANCE_SQRT");
+                throw new ArgumentNullException("MAX_SINGLE_DISTANCE_METERS");
             else
             {
-                MaxDistanceSqrt = double.Parse(buffer, NumberStyles.AllowDecimalPoint,
+                MaxSingleDistance = double.Parse(buffer, NumberStyles.AllowDecimalPoint,
                     System.Globalization.CultureInfo.InvariantCulture);
             }
 

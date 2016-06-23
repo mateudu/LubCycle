@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace LubCycle.Core.Models.GoogleMaps
+namespace LubCycle.Core.Models.GoogleMaps.DistanceMatrix
 {
     public class Distance
     {

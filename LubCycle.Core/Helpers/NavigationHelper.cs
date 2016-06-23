@@ -10,44 +10,47 @@ namespace LubCycle.Core.Helpers
     {
         public NavigationHelper(NavigationHelperSettings settings)
         {
-            this.RouteStatistics = settings.RouteStatistics;
-            this.Stations = settings.Stations;
-            this.MaximalSingleDuration = settings.MaximalSingleDuration;
-            this.MaximalSingleDistance = settings.MaximalSingleDistance;
+            this._routeStatistics = settings.RouteStatistics;
+            this._stations = settings.Stations;
+            this._maximalSingleDuration = settings.MaximalSingleDuration;
+            this._maximalSingleDistance = settings.MaximalSingleDistance;
         }
 
         private List<List<Models.Navigation.Edge>> _graph;
         private Dictionary<string, int> _edges;
-        public List<Models.Navigation.RouteStatistic> RouteStatistics;
-        public List<Place> Stations;
+        private readonly List<Models.Navigation.RouteStatistic> _routeStatistics;
+        private List<Place> _stations;
         private bool _isInitialized = false;
-        public double MaximalSingleDuration;
-        public double MaximalSingleDistance;
+        private readonly double _maximalSingleDuration;
+        private readonly double _maximalSingleDistance;
+
+        public void UpdateStations(List<Place> stations)
+        {
+            if (stations != null)
+                _stations = stations;
+        }
 
         // Initialize directed graph
         private void InitializeGraph()
         {
             if (_isInitialized == false)
             {
-                int from, to;
-                double duration, distance;
-
                 _graph = new List<List<Edge>>();
                 _edges = new Dictionary<string, int>();
 
-                for (int i = 0; i < Stations.Count; i++)
+                for (int i = 0; i < _stations.Count; i++)
                 {
-                    _edges[Stations[i].Uid] = i;
+                    _edges[_stations[i].Uid] = i;
                     _graph.Add(new List<Edge>());
                 }
-                foreach (RouteStatistic t in RouteStatistics)
+                foreach (RouteStatistic t in _routeStatistics)
                 {
-                    if (t.Duration <= MaximalSingleDuration && t.Distance <= MaximalSingleDistance)
+                    if (t.Duration <= _maximalSingleDuration && t.Distance <= _maximalSingleDistance)
                     {
-                        from = _edges[t.Station1Uid];
-                        to = _edges[t.Station2Uid];
-                        distance = t.Distance;
-                        duration = t.Duration;
+                        var from = _edges[t.Station1Uid];
+                        var to = _edges[t.Station2Uid];
+                        var distance = t.Distance;
+                        var duration = t.Duration;
                         _graph[from].Add(new Edge
                         {
                             Distance = distance,
@@ -80,15 +83,15 @@ namespace LubCycle.Core.Helpers
             int v;
             v = _edges[startUid];
 
-            double[] D = new double[Stations.Count];
-            int[] P = new int[Stations.Count];
-            bool[] QS = new bool[Stations.Count];
-            int[] S = new int[Stations.Count];
+            var D = new double[_stations.Count];
+            var P = new int[_stations.Count];
+            var QS = new bool[_stations.Count];
+            var S = new int[_stations.Count];
             int sptr = 0;
 
             #region Dijkstra Algorithm
 
-            for (i = 0; i < Stations.Count; i++)
+            for (i = 0; i < _stations.Count; i++)
             {
                 D[i] = (double)Int32.MaxValue;
                 P[i] = -1;
@@ -97,11 +100,11 @@ namespace LubCycle.Core.Helpers
 
             D[v] = 0;
 
-            for (i = 0; i < Stations.Count; i++)
+            for (i = 0; i < _stations.Count; i++)
             {
                 for (j = 0; QS[j]; j++) ;
                 int u;
-                for (u = j++; j < Stations.Count; j++)
+                for (u = j++; j < _stations.Count; j++)
                 {
                     if (!QS[j] && (D[j] < D[u])) u = j;
                 }
@@ -127,7 +130,7 @@ namespace LubCycle.Core.Helpers
             var result = new List<Place>();
             while (sptr > 0)
             {
-                result.Add(Stations[S[--sptr]]);
+                result.Add(_stations[S[--sptr]]);
             }
 
             return result;
@@ -167,7 +170,7 @@ namespace LubCycle.Core.Helpers
 
             for (int i = 1; i < stations.Count; i++)
             {
-                var el = RouteStatistics.FirstOrDefault(x =>
+                var el = _routeStatistics.FirstOrDefault(x =>
                     x.Station1Uid == stations[i - 1].Uid && x.Station2Uid == stations[i].Uid ||
                     x.Station2Uid == stations[i - 1].Uid && x.Station1Uid == stations[i].Uid);
 
@@ -206,10 +209,10 @@ namespace LubCycle.Core.Helpers
             switch (numberType)
             {
                 case StationNumberType.StationNumber:
-                    return Stations.FirstOrDefault(x => x.Number.ToString() == number);
+                    return _stations.FirstOrDefault(x => x.Number.ToString() == number);
 
                 case StationNumberType.StationUid:
-                    return Stations.FirstOrDefault(x => x.Uid == number);
+                    return _stations.FirstOrDefault(x => x.Uid == number);
 
                 default:
                     return null;

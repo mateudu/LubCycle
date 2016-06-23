@@ -15,6 +15,7 @@ using LubCycle.Api.Services;
 using LubCycle.Core;
 using LubCycle.Core.Helpers;
 using LubCycle.Core.Models.Navigation;
+using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.SwaggerGen.Generator;
 
 namespace LubCycle.Api
@@ -53,21 +54,40 @@ namespace LubCycle.Api
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddMvc();
+            double buffer;
+
+
+            // Add API response caching.
+            services.AddMvc(options =>
+            {
+                options.CacheProfiles.Add("AddressCaching", 
+                    new CacheProfile()
+                    {
+                        Duration = 60
+                    });
+                options.CacheProfiles.Add("StationsCaching", 
+                    new CacheProfile()
+                    {
+                        Duration = (int)(double.TryParse(Configuration["NEXTBIKE_UPDATE_FREQUENCY"], out buffer) ? buffer : 15.0)
+                    });
+            });
 
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
 
             // LubCycle Dependency Injection
-            services.AddSingleton<Core.Helpers.NextBikeHelper>(
-                provider => new NextBikeHelper(Configuration["CITY_UIDS"]));
-            services.AddSingleton<Core.Helpers.BingHelper>(
-                provider => new BingHelper(Configuration["BING_MAPS_API_KEY"]));
-            services.AddSingleton<Core.Helpers.GoogleMapsHelper>(
-                provider => new GoogleMapsHelper(Configuration["GOOGLE_MAPS_API_KEY"]));
 
-            double buffer;
+            services.AddSingleton<Core.Helpers.NextBikeHelper>(
+                provider => 
+                    new NextBikeHelper(
+                            Configuration["CITY_UIDS"], 
+                            double.TryParse( Configuration["NEXTBIKE_UPDATE_FREQUENCY"], out buffer) ? buffer : 15.0
+                        )
+                        );
+
+            services.AddSingleton<Core.Helpers.IMapsHelper>(
+                provider => new GoogleMapsHelper(Configuration["GOOGLE_MAPS_API_KEY"]));
             services.AddSingleton<Core.Helpers.NavigationHelper>(
                 provider =>
                     new NavigationHelper(
@@ -77,12 +97,12 @@ namespace LubCycle.Api
                         {
                             MaximalSingleDuration = double.TryParse(
                                 Configuration["MAX_SINGLE_DURATION"],
-                                out buffer)?buffer:2400.0,
+                                out buffer) ? buffer : 2400.0,
                             MaximalSingleDistance = double.TryParse(
-                                Configuration["MAX_DISTANCE_SQRT"],
-                                out buffer) ? buffer*1000.0 : 7000.0
+                                Configuration["MAX_SINGLE_DISTANCE_METERS"],
+                                out buffer) ? buffer : 7000.0
                         }));
-            
+
             // Inject an implementation of ISwaggerProvider with defaulted settings applied
             services.AddSwaggerGen();
             services.ConfigureSwaggerGen(options =>
