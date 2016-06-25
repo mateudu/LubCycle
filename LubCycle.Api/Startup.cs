@@ -15,7 +15,9 @@ using LubCycle.Api.Services;
 using LubCycle.Core;
 using LubCycle.Core.Helpers;
 using LubCycle.Core.Models.Navigation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using Swashbuckle.SwaggerGen.Generator;
 
 namespace LubCycle.Api
@@ -137,7 +139,17 @@ namespace LubCycle.Api
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                OnPrepareResponse = context =>
+                {
+                    var headers = context.Context.Response.GetTypedHeaders();
+                    headers.CacheControl = new CacheControlHeaderValue()
+                    {
+                        MaxAge = TimeSpan.FromMinutes(60)
+                    };
+                }
+            });
 
             app.UseIdentity();
 
