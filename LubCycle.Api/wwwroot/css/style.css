@@ -40,7 +40,8 @@ body,
 }
 
 .carousel-item:nth-child(1) {
-    background-image: url("../images/lublin_landing.jpg");
+    /*background-image: url("../images/lublin_landing.jpg");*/
+    background-image: url("http://oi67.tinypic.com/2n6zmud.jpg");
     background-repeat: no-repeat;
     background-size: cover;
 }

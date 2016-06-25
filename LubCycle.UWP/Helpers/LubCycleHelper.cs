@@ -48,7 +48,7 @@ namespace LubCycle.UWP.Helpers
         {
             try
             {
-                var url = new Uri($"{_serviceUrl}/api/location/query/{query}");
+                var url = new Uri($"{_serviceUrl}/api/location/query/{Uri.EscapeDataString(query)}");
                 var result = await _client.GetAsync(url);
                 var response = await result.Content.ReadAsStringAsync();
                 var obj = JsonConvert.DeserializeObject<LocationResponse>(response);

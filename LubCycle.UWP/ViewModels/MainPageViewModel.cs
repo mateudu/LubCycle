@@ -44,6 +44,10 @@ namespace LubCycle.UWP.ViewModels
                 Value = suspensionState[nameof(Value)]?.ToString();
             }
             await Task.CompletedTask;
+            if (CacheData.Position != null)
+            {
+                MapControl.TrySetViewAsync(CacheData.Position.Coordinate.Point, 15.0);
+            }
         }
 
         public override async Task OnNavigatedFromAsync(IDictionary<string, object> suspensionState, bool suspending)
@@ -76,6 +80,10 @@ namespace LubCycle.UWP.ViewModels
         {
             StationsListViewItems = await ListHelper.LoadStationsAndPositionAsync(_reloadRequested);
             ListHelper.ReloadList(ref StationsListViewItems, ref MapItemsSource);
+            if (CacheData.Position != null)
+            {
+                MapControl.TrySetViewAsync(CacheData.Position.Coordinate.Point, 15.0);
+            }
         }
 
         public void GotoDetailsPage() =>
@@ -111,9 +119,9 @@ namespace LubCycle.UWP.ViewModels
             if (!String.IsNullOrWhiteSpace(AddressSearch))
             {
                 SearchButtonEnabled = false;
-                //var result = await _lubcycleHelper.GetLocationAsync(AddressSearch);
-                //var dlg = new MessageDialog(AddressSearch);
-                //await dlg.ShowAsync();
+                var result = await _lubcycleHelper.GetLocationAsync(AddressSearch);
+                var dlg = new MessageDialog($"{result.Message}");
+                await dlg.ShowAsync();
                 SearchButtonEnabled = true;
             }
         }
@@ -122,13 +130,16 @@ namespace LubCycle.UWP.ViewModels
         {
             if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
             {
+                SearchButtonEnabled = true;
                 var matchingStations = StationsListViewItems?
                     .Where(x => 
                         x.Station.Name.ToLower().Contains(sender.Text.ToLower())
                         ).ToList();
                 sender.ItemsSource = matchingStations;
-                //var matchingContinents = squeries.GetMatchingContinents(sender.Text);
-                //sender.ItemsSource = matchingContinents.ToList();
+            }
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.SuggestionChosen)
+            {
+                SearchButtonEnabled = false;
             }
         }
     }
