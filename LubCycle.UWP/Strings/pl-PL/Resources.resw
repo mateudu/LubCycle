@@ -123,4 +123,10 @@
   <data name="MainPage_AddressTB.PlaceholderText" xml:space="preserve">
     <value>Wprowadź adres celu.</value>
   </data>
+  <data name="navigateFromMFI.Text" xml:space="preserve">
+    <value>Prowadź z</value>
+  </data>
+  <data name="navigateToMFI.Text" xml:space="preserve">
+    <value>Prowadź do</value>
+  </data>
 </root>

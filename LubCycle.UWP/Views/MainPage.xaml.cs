@@ -5,6 +5,9 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using System.Collections.ObjectModel;
 using Windows.UI.Core;
+using Windows.UI.Popups;
+using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Input;
 
 namespace LubCycle.UWP.Views
 {
@@ -18,6 +21,7 @@ namespace LubCycle.UWP.Views
             stationsMap.Center = StaticData.DefaultMapCenter;
             stationsMap.ZoomLevel = 15.0;
             ViewModel.MapControl = stationsMap;
+            ViewModel.PinpointFlyout = Resources["PinpointFlyout"] as MenuFlyout;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -35,10 +39,14 @@ namespace LubCycle.UWP.Views
             App.Current.Exit();
         }
 
-
         private void MainPage_OnLoaded(object sender, RoutedEventArgs e)
         {
             ViewModel.MainPage_OnLoaded(sender,e);
+        }
+
+        private void Pinpoint_OnRightTapped(object sender, RightTappedRoutedEventArgs e)
+        {
+            ViewModel.Pinpoint_OnRightTapped(sender, e);
         }
     }
 }

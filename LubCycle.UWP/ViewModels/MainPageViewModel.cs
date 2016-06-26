@@ -11,6 +11,7 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Maps;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media.Animation;
 using Template10.Services.NavigationService;
 using Windows.UI.Xaml.Navigation;
@@ -22,8 +23,9 @@ namespace LubCycle.UWP.ViewModels
 {
     public class MainPageViewModel : ViewModelBase
     {
-        private LubCycleHelper _lubcycleHelper;
+        private readonly LubCycleHelper _lubcycleHelper;
         public MapControl MapControl;
+        public MenuFlyout PinpointFlyout;
         public MainPageViewModel()
         {
             if (Windows.ApplicationModel.DesignMode.DesignModeEnabled)
@@ -46,7 +48,7 @@ namespace LubCycle.UWP.ViewModels
             await Task.CompletedTask;
             if (CacheData.Position != null)
             {
-                MapControl.TrySetViewAsync(CacheData.Position.Coordinate.Point, 15.0);
+                await MapControl.TrySetViewAsync(CacheData.Position.Coordinate.Point, 15.0);
             }
         }
 
@@ -68,6 +70,7 @@ namespace LubCycle.UWP.ViewModels
 
         ////////////////////////////////////////////////
         private bool _reloadRequested = false;
+        private StationsListViewItem _rightPressedItem = null;
         public ObservableCollection<StationsListViewItem> MapItemsSource;
         private List<StationsListViewItem> StationsListViewItems;
 
@@ -82,7 +85,7 @@ namespace LubCycle.UWP.ViewModels
             ListHelper.ReloadList(ref StationsListViewItems, ref MapItemsSource);
             if (CacheData.Position != null)
             {
-                MapControl.TrySetViewAsync(CacheData.Position.Coordinate.Point, 15.0);
+                await MapControl.TrySetViewAsync(CacheData.Position.Coordinate.Point, 15.0);
             }
         }
 
@@ -130,17 +133,55 @@ namespace LubCycle.UWP.ViewModels
         {
             if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
             {
-                SearchButtonEnabled = true;
-                var matchingStations = StationsListViewItems?
-                    .Where(x => 
-                        x.Station.Name.ToLower().Contains(sender.Text.ToLower())
-                        ).ToList();
+                var matchingStations = GetMatchingStations(sender.Text);
                 sender.ItemsSource = matchingStations;
             }
             if (args.Reason == AutoSuggestionBoxTextChangeReason.SuggestionChosen)
             {
-                SearchButtonEnabled = false;
+                
             }
+        }
+
+        public async void AddressSearchASB_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+        {
+            if (args.SelectedItem is StationsListViewItem)
+            {
+                await MapControl.TrySetViewAsync((args.SelectedItem as StationsListViewItem).Geopoint, 15.0);
+            }
+        }
+
+        private List<StationsListViewItem> GetMatchingStations(string query)
+        {
+            return StationsListViewItems?
+                    .Where(x =>
+                        x.Station.Name.ToLower().Contains(query.ToLower())
+                        ).ToList();
+        }
+
+
+        // This function MUST be invoked before NavigateToStationClick/NavigateFromStationClick,
+        // because it sets _rightPressedItem !!!
+        public void Pinpoint_OnRightTapped(object sender, RightTappedRoutedEventArgs e)
+        {
+            PinpointFlyout.ShowAt(sender as FrameworkElement);
+            if ((sender as StackPanel)?.Tag is StationsListViewItem)
+            {
+                _rightPressedItem = (sender as StackPanel).Tag as StationsListViewItem;
+            }
+        }
+
+        public async void NavigateToStationClick()
+        {
+            string text = _rightPressedItem?.Station?.Name ?? "Puste";
+            var dlg = new MessageDialog(text);
+            await dlg.ShowAsync();
+        }
+
+        public async void NavigateFromStationClick()
+        {
+            string text = _rightPressedItem?.Station?.Name ?? "Puste";
+            var dlg = new MessageDialog(text);
+            await dlg.ShowAsync();
         }
     }
 }

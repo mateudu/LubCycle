@@ -17,6 +17,14 @@
     <Page.DataContext>
         <vm:MainPageViewModel x:Name="ViewModel" />
     </Page.DataContext>
+    <Page.Resources>
+        <MenuFlyout x:Key="PinpointFlyout">
+            <MenuFlyoutItem x:Uid="navigateFromMFI" 
+                            Click="{x:Bind ViewModel.NavigateFromStationClick, Mode=OneWay}"/>
+            <MenuFlyoutItem x:Uid="navigateToMFI" 
+                            Click="{x:Bind ViewModel.NavigateToStationClick, Mode=OneWay}"/>
+        </MenuFlyout>
+    </Page.Resources>
     
     <!--<RelativePanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">-->
     <RelativePanel>
@@ -91,8 +99,11 @@
                     <maps:MapItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="models:StationsListViewItem">
                             <StackPanel maps:MapControl.NormalizedAnchorPoint="{x:Bind AnchorPoint, Mode=OneWay}"
-                                            maps:MapControl.Location="{x:Bind Geopoint, Mode=OneWay}">
-                                <StackPanel Background="{ThemeResource CustomColorBrush}" MaxWidth="120">
+                                        maps:MapControl.Location="{x:Bind Geopoint, Mode=OneWay}"
+                                        >
+                                <StackPanel Background="{ThemeResource CustomColorBrush}" MaxWidth="120"
+                                        RightTapped="Pinpoint_OnRightTapped"
+                                        Tag ="{x:Bind }">
                                     <TextBlock Text="{x:Bind Station.Name, Mode=OneWay}" FontSize="10"
                                                    TextWrapping="WrapWholeWords"
                                                    Foreground="{ThemeResource ContrastColorBrush}"
@@ -117,10 +128,12 @@
                     Grid.Row="1">
 
                 <AutoSuggestBox 
-                x:Uid="MainPage_AddressTB"
-                HorizontalAlignment="Stretch"
-                Text="{x:Bind ViewModel.AddressSearch, Mode=TwoWay}"
-                TextChanged="{x:Bind ViewModel.AddressSearchASB_OnTextChanged, Mode=OneWay}"/>
+                    x:Uid="MainPage_AddressTB"
+                    HorizontalAlignment="Stretch"
+                    Text="{x:Bind ViewModel.AddressSearch, Mode=TwoWay}"
+                    TextChanged="{x:Bind ViewModel.AddressSearchASB_OnTextChanged, Mode=OneWay}"
+                    SuggestionChosen="{x:Bind ViewModel.AddressSearchASB_SuggestionChosen, Mode=OneWay}"
+                    />
                 <Button
                 Margin="0,5,0,0"
                 HorizontalAlignment="Stretch"
