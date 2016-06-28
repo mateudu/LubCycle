@@ -81,8 +81,8 @@ namespace LubCycle.UWP.Helpers
                             }),
                             Station = obj,
                             Distance = GeoHelper.CalcDistanceInMeters(
-                                CacheData.Position?.Coordinate.Latitude,
-                                CacheData.Position?.Coordinate.Longitude,
+                                CacheData.Position?.Coordinate.Point.Position.Latitude,
+                                CacheData.Position?.Coordinate.Point.Position.Longitude,
                                 obj.Lat,
                                 obj.Lng)
                         });
