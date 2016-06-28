@@ -103,6 +103,7 @@
     <Compile Include="Helpers\ListHelper.cs" />
     <Compile Include="Helpers\LocationHelper.cs" />
     <Compile Include="Helpers\LubCycleHelper.cs" />
+    <Compile Include="Helpers\NotificationHelper.cs" />
     <Compile Include="Models\LocationResponse.cs" />
     <Compile Include="Models\Place.cs" />
     <Compile Include="Models\Route.cs" />

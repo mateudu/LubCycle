@@ -44,9 +44,14 @@ namespace LubCycle.UWP.Views
             ViewModel.MainPage_OnLoaded(sender,e);
         }
 
+        private void Pinpoint_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            ViewModel.Pinpoint_OnTapped(sender, e);
+        }
+
         private void Pinpoint_OnRightTapped(object sender, RightTappedRoutedEventArgs e)
         {
-            ViewModel.Pinpoint_OnRightTapped(sender, e);
+            ViewModel.Pinpoint_OnTapped(sender, null);
         }
     }
 }

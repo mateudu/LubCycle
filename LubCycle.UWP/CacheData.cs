@@ -12,5 +12,6 @@ namespace LubCycle.UWP
     {
         public static List<Place> Stations { get; set; }
         public static Geoposition Position { get; set; }
+        public static List<StationsListViewItem> StationListViewItems { get; set; }
     }
 }

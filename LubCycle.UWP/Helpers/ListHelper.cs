@@ -13,82 +13,79 @@ namespace LubCycle.UWP.Helpers
 {
     class ListHelper
     {
-        public static void ReloadList(ref List<StationsListViewItem> slvi, ref ObservableCollection<StationsListViewItem> obs, Func<StationsListViewItem,bool> pred = null)
+        public static void ReloadList(ref ObservableCollection<StationsListViewItem> obs, Func<StationsListViewItem,bool> pred = null)
         {
-            //MapControl.MapElements.Clear();
             List<StationsListViewItem> obj;
             if (pred != null)
             {
-                obj = slvi.Where(pred).ToList();
+                obj = CacheData.StationListViewItems?.Where(pred).ToList();
             }
             else
             {
-                obj = slvi.ToList();
+                obj = CacheData.StationListViewItems?.ToList();
             }
-            obj.Sort((x, y) => x.Distance.CompareTo(y.Distance));
+            obj?.Sort((x, y) => x.Distance.CompareTo(y.Distance));
             obs.AddRange(obj, true);
-
-            //if (Position != null)
-            //{
-            //    var poi = new MapIcon { Location = Position.Coordinate.Point, NormalizedAnchorPoint = new Point(0.5, 1.0), Title = "Moja pozycja", ZIndex = 0 };
-            //    MapControl.MapElements.Add(poi);
-            //}
         }
 
-        public static async Task<List<StationsListViewItem>> LoadStationsAndPositionAsync(bool reloadRequested = false)
+        public static async Task LoadStationsAndPositionAsync(bool reloadRequested = false)
         {
-            var list = new List<StationsListViewItem>();
             var pos = LocationHelper.GetCurrentLocationAsync();
-            if (reloadRequested == true || CacheData.Stations == null || CacheData.Stations.Count == 0)
+            if (reloadRequested == true || CacheData.Stations == null || CacheData.Stations.Count == 0 || 
+                CacheData.StationListViewItems==null || CacheData.StationListViewItems.Count==0)
             {
-                var stations = new LubCycleHelper().GetStationsAsync();
-                await Task.WhenAll(pos, stations);
-
-                CacheData.Stations = stations.Result ?? CacheData.Stations;
-                if (stations.Result == null)
+                try
                 {
-                    try
+                    var stations = new LubCycleHelper().GetStationsAsync();
+                    await Task.WhenAll(pos, stations);
+
+                    CacheData.Position = pos.Result ?? CacheData.Position;
+                    CacheData.Stations = stations.Result ?? CacheData.Stations;
+                    if (CacheData.Stations != null)
                     {
-                        var dlg = new MessageDialog("Wystąpił problem z połączeniem z serwisem.");
-                        await dlg.ShowAsync();
+                        CacheData.StationListViewItems = new List<StationsListViewItem>();
+                        foreach (var obj in CacheData.Stations)
+                        {
+                            if (obj.Bikes == @"5+")
+                                obj.Bikes = "5";
+                            CacheData.StationListViewItems.Add(
+                                new StationsListViewItem()
+                                {
+                                    Geopoint = new Geopoint(
+                                        new BasicGeoposition()
+                                        {
+                                            Latitude = obj.Lat,
+                                            Longitude = obj.Lng,
+                                        }),
+                                    Station = obj,
+                                    Distance = GeoHelper.CalcDistanceInMeters(
+                                        CacheData.Position?.Coordinate.Point.Position.Latitude,
+                                        CacheData.Position?.Coordinate.Point.Position.Longitude,
+                                        obj.Lat,
+                                        obj.Lng)
+                                });
+                        }
                     }
-                    catch (Exception)
-                    {
-                        // ignored
-                    }
+                }
+                catch (Exception)
+                {
+                    var dlg = new MessageDialog("Wystąpił problem z połączeniem z serwisem.");
+                    await dlg.ShowAsync();
                 }
             }
             else
             {
                 await Task.WhenAll(pos);
-            }
-
-            CacheData.Position = pos.Result ?? CacheData.Position;
-            if (CacheData.Stations != null)
-            {
-                foreach (var obj in CacheData.Stations)
+                CacheData.Position = pos.Result ?? CacheData.Position;
+                foreach (var obj in CacheData.StationListViewItems)
                 {
-                    if (obj.Bikes == @"5+")
-                        obj.Bikes = "5";
-                    list.Add(
-                        new StationsListViewItem()
-                        {
-                            Geopoint = new Geopoint(
-                            new BasicGeoposition()
-                            {
-                                Latitude = obj.Lat,
-                                Longitude = obj.Lng,
-                            }),
-                            Station = obj,
-                            Distance = GeoHelper.CalcDistanceInMeters(
-                                CacheData.Position?.Coordinate.Point.Position.Latitude,
-                                CacheData.Position?.Coordinate.Point.Position.Longitude,
-                                obj.Lat,
-                                obj.Lng)
-                        });
+                    obj.Distance = GeoHelper.CalcDistanceInMeters(
+                        CacheData.Position?.Coordinate.Point.Position.Latitude,
+                        CacheData.Position?.Coordinate.Point.Position.Longitude,
+                        obj.Geopoint.Position.Latitude,
+                        obj.Geopoint.Position.Longitude);
                 }
             }
-            return list;
         }
     }
 }

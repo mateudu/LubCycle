@@ -86,7 +86,7 @@
               RelativePanel.AlignBottomWithPanel="True">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <maps:MapControl x:Name="stationsMap"
                             Grid.Row="0"
@@ -102,7 +102,8 @@
                                         maps:MapControl.Location="{x:Bind Geopoint, Mode=OneWay}"
                                         >
                                 <StackPanel Background="{ThemeResource CustomColorBrush}" MaxWidth="120"
-                                        RightTapped="Pinpoint_OnRightTapped"
+                                            Tapped="Pinpoint_OnTapped"
+                                            RightTapped="Pinpoint_OnRightTapped"
                                         Tag ="{x:Bind }">
                                     <TextBlock Text="{x:Bind Station.Name, Mode=OneWay}" FontSize="10"
                                                    TextWrapping="WrapWholeWords"
@@ -144,6 +145,42 @@
                 Click="{x:Bind ViewModel.SearchButton_OnClick, Mode=OneWay}"
                 Opacity="1.0"
                 />
+                <!--START STATION-->
+                <Grid HorizontalAlignment="Stretch" Margin="0,5,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0"
+                                        Orientation="Vertical"
+                                        HorizontalAlignment="Stretch">
+                        <TextBlock FontSize="15" FontWeight="SemiBold" 
+                                   Text="Stacja startowa" />
+                        <TextBlock FontSize="15"
+                                   Text="{x:Bind ViewModel.StartStation.Station.Name, Mode=OneWay}" />
+                    </StackPanel>
+                </Grid>
+                <!--/START STATION-->
+                <!--DEST STATION-->
+                <Grid HorizontalAlignment="Stretch" Margin="0,5,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0"
+                                        Orientation="Vertical"
+                                        HorizontalAlignment="Stretch">
+                        <TextBlock FontSize="15" FontWeight="SemiBold" 
+                                   Text="Stacja docelowa" />
+                        <TextBlock FontSize="15"
+                                   Text="{x:Bind ViewModel.DestStation.Station.Name, Mode=OneWay, TargetNullValue=''}" />
+                    </StackPanel>
+                </Grid>
+                <!--/DEST STATION-->
+                <Button HorizontalAlignment="Stretch"
+                        IsEnabled="{x:Bind ViewModel.StartNavigationButtonEnabled, Mode=TwoWay}"
+                        Content="Nawiguj" Background="{StaticResource CustomColorBrush}"
+                        Foreground="{StaticResource ContrastColorBrush}"/>
             </StackPanel>
         </Grid>
         

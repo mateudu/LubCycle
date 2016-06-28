@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.Storage.Pickers;
+using Windows.UI.Notifications;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -72,7 +73,6 @@ namespace LubCycle.UWP.ViewModels
         private bool _reloadRequested = false;
         private StationsListViewItem _rightPressedItem = null;
         public ObservableCollection<StationsListViewItem> MapItemsSource;
-        private List<StationsListViewItem> StationsListViewItems;
 
         public void MainPage_OnLoaded(object sender, RoutedEventArgs e)
         {
@@ -81,8 +81,8 @@ namespace LubCycle.UWP.ViewModels
 
         private async Task LoadPageAsync()
         {
-            StationsListViewItems = await ListHelper.LoadStationsAndPositionAsync(_reloadRequested);
-            ListHelper.ReloadList(ref StationsListViewItems, ref MapItemsSource);
+            await ListHelper.LoadStationsAndPositionAsync(_reloadRequested);
+            ListHelper.ReloadList(ref MapItemsSource);
             if (CacheData.Position != null)
             {
                 await MapControl.TrySetViewAsync(CacheData.Position.Coordinate.Point, 15.0);
@@ -116,6 +116,30 @@ namespace LubCycle.UWP.ViewModels
             get { return _searchButtonEnabled; }
             set { Set(ref _searchButtonEnabled, value); }
         }
+
+        private bool _startNavigationButtonEnabled = false;
+
+        public bool StartNavigationButtonEnabled
+        {
+            get { return _startNavigationButtonEnabled; }
+            set { Set(ref _startNavigationButtonEnabled, value); }
+        }
+
+
+        private StationsListViewItem _startStation = null;
+        private StationsListViewItem _destStation = null;
+
+        public StationsListViewItem StartStation
+        {
+            get { return _startStation; }
+            set { Set(ref _startStation, value); }
+        }
+        public StationsListViewItem DestStation
+        {
+            get { return _destStation; }
+            set { Set(ref _destStation, value); }
+        }
+
 
         public async void SearchButton_OnClick(object sender, RoutedEventArgs e)
         {
@@ -152,7 +176,7 @@ namespace LubCycle.UWP.ViewModels
 
         private List<StationsListViewItem> GetMatchingStations(string query)
         {
-            return StationsListViewItems?
+            return CacheData.StationListViewItems?
                     .Where(x =>
                         x.Station.Name.ToLower().Contains(query.ToLower())
                         ).ToList();
@@ -161,7 +185,7 @@ namespace LubCycle.UWP.ViewModels
 
         // This function MUST be invoked before NavigateToStationClick/NavigateFromStationClick,
         // because it sets _rightPressedItem !!!
-        public void Pinpoint_OnRightTapped(object sender, RightTappedRoutedEventArgs e)
+        public void Pinpoint_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             PinpointFlyout.ShowAt(sender as FrameworkElement);
             if ((sender as StackPanel)?.Tag is StationsListViewItem)
@@ -172,17 +196,38 @@ namespace LubCycle.UWP.ViewModels
 
         public async void NavigateToStationClick()
         {
-            string text = _rightPressedItem?.Station?.Name ?? "Puste";
-            var dlg = new MessageDialog(text);
-            await dlg.ShowAsync();
+            DestStation = _rightPressedItem;
+            if (StartStation == null)
+            {
+                var toast = NotificationHelper.GetTextOnlyNotification(
+                    "Wybrano stacjê docelow¹",
+                    "Wybierz stacjê startow¹."
+                    );
+                ToastNotificationManager.CreateToastNotifier().Show(toast);
+            }
+            else
+            {
+                StartNavigationButtonEnabled = true;
+            }
         }
 
         public async void NavigateFromStationClick()
         {
-            string text = _rightPressedItem?.Station?.Name ?? "Puste";
-            var dlg = new MessageDialog(text);
-            await dlg.ShowAsync();
+            StartStation = _rightPressedItem;
+            if (DestStation == null)
+            {
+                var toast = NotificationHelper.GetTextOnlyNotification(
+                "Wybrano stacjê startow¹",
+                "Wybierz stacjê docelow¹."
+                );
+                ToastNotificationManager.CreateToastNotifier().Show(toast);
+            }
+            else
+            {
+                StartNavigationButtonEnabled = true;
+            }
         }
+        // END = Pinpoint click functions.
     }
 }
 

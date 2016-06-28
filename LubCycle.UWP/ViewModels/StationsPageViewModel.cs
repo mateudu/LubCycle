@@ -29,8 +29,6 @@ namespace LubCycle.UWP.ViewModels
             }
 
             MapItemsSource = new ObservableCollection<StationsListViewItem>();
-            
-            StationsListViewItems = new List<StationsListViewItem>();
             _lubcycle = new LubCycleHelper();
         }
         private string _Value = "Default";
@@ -66,7 +64,6 @@ namespace LubCycle.UWP.ViewModels
         public readonly int[] BikeCountItems = new[] { 0, 1, 2, 3, 4, 5 };
         private readonly LubCycleHelper _lubcycle;
         public ObservableCollection<StationsListViewItem> MapItemsSource;
-        private List<StationsListViewItem> StationsListViewItems;
 
         public MapControl MapControl;
 
@@ -97,8 +94,7 @@ namespace LubCycle.UWP.ViewModels
             if (number.HasValue)
             {
                 SelectedBikes = number.Value;
-                ListHelper.ReloadList(
-                    ref StationsListViewItems, 
+                ListHelper.ReloadList( 
                     ref MapItemsSource, 
                     item => int.Parse(item.Station.Bikes)>=SelectedBikes
                     );
@@ -130,8 +126,8 @@ namespace LubCycle.UWP.ViewModels
             {
                 RefreshButtonEnabled = false;
                 FilterButtonEnabled = false;
-                StationsListViewItems = await ListHelper.LoadStationsAndPositionAsync(_reloadRequested);
-                ListHelper.ReloadList(ref StationsListViewItems, ref MapItemsSource);
+                await ListHelper.LoadStationsAndPositionAsync(_reloadRequested);
+                ListHelper.ReloadList(ref MapItemsSource);
                 await MapControl.TrySetViewAsync(CacheData.Position != null ? CacheData.Position.Coordinate.Point : StaticData.DefaultMapCenter, 15.0);
             }
             catch (Exception exc)
