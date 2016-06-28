@@ -18,6 +18,7 @@ using LubCycle.Core.Models.Navigation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
+using Newtonsoft.Json.Serialization;
 using Swashbuckle.SwaggerGen.Generator;
 
 namespace LubCycle.Api
@@ -60,19 +61,29 @@ namespace LubCycle.Api
 
 
             // Add API response caching.
-            services.AddMvc(options =>
-            {
-                options.CacheProfiles.Add("AddressCaching", 
-                    new CacheProfile()
+            services
+                .AddMvc(options =>
+                {
+                    options.CacheProfiles.Add("AddressCaching",
+                        new CacheProfile()
+                        {
+                            Duration = 60
+                        });
+                    options.CacheProfiles.Add("StationsCaching",
+                        new CacheProfile()
+                        {
+                            Duration = (int)(double.TryParse(Configuration["NEXTBIKE_UPDATE_FREQUENCY"], out buffer) ? buffer : 15.0)
+                        });
+                })
+                .AddJsonOptions(opt =>
+                {
+                    var resolver = opt.SerializerSettings.ContractResolver;
+                    if (resolver != null)
                     {
-                        Duration = 60
-                    });
-                options.CacheProfiles.Add("StationsCaching", 
-                    new CacheProfile()
-                    {
-                        Duration = (int)(double.TryParse(Configuration["NEXTBIKE_UPDATE_FREQUENCY"], out buffer) ? buffer : 15.0)
-                    });
-            });
+                        var res = resolver as DefaultContractResolver;
+                        res.NamingStrategy = null;  // <<!-- this removes the camelcasing
+                    }
+                });
 
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
@@ -105,21 +116,21 @@ namespace LubCycle.Api
                                 out buffer) ? buffer : 7000.0
                         }));
 
-            // Inject an implementation of ISwaggerProvider with defaulted settings applied
-            services.AddSwaggerGen();
-            services.ConfigureSwaggerGen(options =>
-            {
-                options.SingleApiVersion(new Info()
-                {
-                    Contact = new Contact()
-                    {
-                        Name = "LubCycle",
-                        Email = "kontakt@lubcycle.pl"
-                    },
-                    Version = "v1",
-                    Title = "LubCycle"
-                });
-            });
+            //// Inject an implementation of ISwaggerProvider with defaulted settings applied
+            //services.AddSwaggerGen();
+            //services.ConfigureSwaggerGen(options =>
+            //{
+            //    options.SingleApiVersion(new Info()
+            //    {
+            //        Contact = new Contact()
+            //        {
+            //            Name = "LubCycle",
+            //            Email = "kontakt@lubcycle.pl"
+            //        },
+            //        Version = "v1",
+            //        Title = "LubCycle"
+            //    });
+            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -162,11 +173,11 @@ namespace LubCycle.Api
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            // Enable middleware to serve generated Swagger as a JSON endpoint
-            app.UseSwaggerGen();
+            //// Enable middleware to serve generated Swagger as a JSON endpoint
+            //app.UseSwaggerGen();
 
-            // Enable middleware to serve swagger-ui assets (HTML, JS, CSS etc.)
-            app.UseSwaggerUi();
+            //// Enable middleware to serve swagger-ui assets (HTML, JS, CSS etc.)
+            //app.UseSwaggerUi();
         }
     }
 }
