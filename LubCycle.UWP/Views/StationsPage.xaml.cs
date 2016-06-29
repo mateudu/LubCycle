@@ -8,10 +8,13 @@ using System.Threading.Tasks;
 using Template10.Utils;
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
+using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Maps;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -32,11 +35,26 @@ namespace LubCycle.UWP.Views
             stationsMap.Center = StaticData.DefaultMapCenter;
             stationsMap.ZoomLevel = 15.0;
             ViewModel.MapControl = stationsMap;
+            ViewModel.PinpointFlyout = Resources["PinpointFlyout"] as MenuFlyout;
         }
 
-        private async void StationsPage_OnLoaded(object sender, RoutedEventArgs e)
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            await ViewModel.OnLoaded(sender, e);
+            base.OnNavigatedTo(e);
+        }
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+        }
+        
+        private void Pinpoint_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            ViewModel.Pinpoint_OnTapped(sender, e);
+        }
+
+        private void Pinpoint_OnRightTapped(object sender, RightTappedRoutedEventArgs e)
+        {
+            ViewModel.Pinpoint_OnTapped(sender, null);
         }
     }
 }

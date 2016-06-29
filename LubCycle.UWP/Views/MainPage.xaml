@@ -11,27 +11,18 @@
       xmlns:vm="using:LubCycle.UWP.ViewModels"
       xmlns:maps="using:Windows.UI.Xaml.Controls.Maps"
       xmlns:models="using:LubCycle.UWP.Models"
-      mc:Ignorable="d"
-      Loaded="MainPage_OnLoaded">
+      mc:Ignorable="d">
 
     <Page.DataContext>
         <vm:MainPageViewModel x:Name="ViewModel" />
     </Page.DataContext>
-    <Page.Resources>
-        <MenuFlyout x:Key="PinpointFlyout">
-            <MenuFlyoutItem x:Uid="navigateFromMFI" 
-                            Click="{x:Bind ViewModel.NavigateFromStationClick, Mode=OneWay}"/>
-            <MenuFlyoutItem x:Uid="navigateToMFI" 
-                            Click="{x:Bind ViewModel.NavigateToStationClick, Mode=OneWay}"/>
-        </MenuFlyout>
-    </Page.Resources>
     
     <!--<RelativePanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">-->
     <RelativePanel>
-        <!--<RelativePanel.Background>
+        <RelativePanel.Background>
             <ImageBrush ImageSource="../Assets/lublin_landing.jpg"
                         Opacity="0.4" Stretch="UniformToFill"/>
-        </RelativePanel.Background>-->
+        </RelativePanel.Background>
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="AdaptiveVisualStateGroup">
                 <VisualState x:Name="VisualStateNarrow">
@@ -74,9 +65,9 @@
             
             <!--  secondary commands  -->
             <controls:PageHeader.SecondaryCommands>
-                <AppBarButton Click="{x:Bind ViewModel.GotoSettings}" Label="Ustawienia" />
+                <!--<AppBarButton Click="{x:Bind ViewModel.GotoSettings}" Label="Ustawienia" />-->
                 <!--<AppBarButton Click="{x:Bind ViewModel.GotoPrivacy}" Label="Privacy" />-->
-                <AppBarButton Click="{x:Bind ViewModel.GotoAbout}" Label="O aplikacji" />
+                <!--<AppBarButton Click="{x:Bind ViewModel.GotoAbout}" Label="O aplikacji" />-->
             </controls:PageHeader.SecondaryCommands>
 
         </controls:PageHeader>
@@ -88,134 +79,7 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <maps:MapControl x:Name="stationsMap"
-                            Grid.Row="0"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Stretch"
-                            BusinessLandmarksVisible="True"
-                            LandmarksVisible="True"
-                            PedestrianFeaturesVisible="True">
-                <maps:MapItemsControl ItemsSource="{x:Bind ViewModel.MapItemsSource, Mode=OneWay}">
-                    <maps:MapItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="models:StationsListViewItem">
-                            <StackPanel maps:MapControl.NormalizedAnchorPoint="{x:Bind AnchorPoint, Mode=OneWay}"
-                                        maps:MapControl.Location="{x:Bind Geopoint, Mode=OneWay}"
-                                        >
-                                <StackPanel Background="{ThemeResource CustomColorBrush}" MaxWidth="120"
-                                            Tapped="Pinpoint_OnTapped"
-                                            RightTapped="Pinpoint_OnRightTapped"
-                                        Tag ="{x:Bind }">
-                                    <TextBlock Text="{x:Bind Station.Name, Mode=OneWay}" FontSize="10"
-                                                   TextWrapping="WrapWholeWords"
-                                                   Foreground="{ThemeResource ContrastColorBrush}"
-                                                   Padding="5,5,5,0" />
-                                    <TextBlock Padding="5,0,0,5" FontSize="8"
-                                                   Foreground="{ThemeResource ContrastColorBrush}"
-                                                   Opacity="0.8" >
-                                            <Run>Rowery:</Run>
-                                            <Run Text="{x:Bind Station.Bikes, Mode=OneWay}"/>
-                                    </TextBlock>
-                                </StackPanel>
-                                <Polygon Points="0,0 30,0 0,50" Fill="{ThemeResource CustomColorBrush}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </maps:MapItemsControl.ItemTemplate>
-                </maps:MapItemsControl>
-            </maps:MapControl>
-            <StackPanel RelativePanel.AlignVerticalCenterWithPanel="True"
-                    RelativePanel.AlignLeftWithPanel="True"
-                    RelativePanel.AlignRightWithPanel="True"
-                    Padding="5"
-                    Grid.Row="1">
-
-                <AutoSuggestBox 
-                    x:Uid="MainPage_AddressTB"
-                    HorizontalAlignment="Stretch"
-                    Text="{x:Bind ViewModel.AddressSearch, Mode=TwoWay}"
-                    TextChanged="{x:Bind ViewModel.AddressSearchASB_OnTextChanged, Mode=OneWay}"
-                    SuggestionChosen="{x:Bind ViewModel.AddressSearchASB_SuggestionChosen, Mode=OneWay}"
-                    />
-                <Button
-                Margin="0,5,0,0"
-                HorizontalAlignment="Stretch"
-                Content="Szukaj"
-                Background="{StaticResource CustomColorBrush}"
-                Foreground="{StaticResource ContrastColorBrush}"
-                IsEnabled="{x:Bind ViewModel.SearchButtonEnabled, Mode=OneWay}"
-                Click="{x:Bind ViewModel.SearchButton_OnClick, Mode=OneWay}"
-                Opacity="1.0"
-                />
-                <!--START STATION-->
-                <Grid HorizontalAlignment="Stretch" Margin="0,5,0,5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0"
-                                        Orientation="Vertical"
-                                        HorizontalAlignment="Stretch">
-                        <TextBlock FontSize="15" FontWeight="SemiBold" 
-                                   Text="Stacja startowa" />
-                        <TextBlock FontSize="15"
-                                   Text="{x:Bind ViewModel.StartStation.Station.Name, Mode=OneWay}" />
-                    </StackPanel>
-                </Grid>
-                <!--/START STATION-->
-                <!--DEST STATION-->
-                <Grid HorizontalAlignment="Stretch" Margin="0,5,0,5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0"
-                                        Orientation="Vertical"
-                                        HorizontalAlignment="Stretch">
-                        <TextBlock FontSize="15" FontWeight="SemiBold" 
-                                   Text="Stacja docelowa" />
-                        <TextBlock FontSize="15"
-                                   Text="{x:Bind ViewModel.DestStation.Station.Name, Mode=OneWay, TargetNullValue=''}" />
-                    </StackPanel>
-                </Grid>
-                <!--/DEST STATION-->
-                <Button HorizontalAlignment="Stretch"
-                        IsEnabled="{x:Bind ViewModel.StartNavigationButtonEnabled, Mode=TwoWay}"
-                        Content="Nawiguj" Background="{StaticResource CustomColorBrush}"
-                        Foreground="{StaticResource ContrastColorBrush}"/>
-            </StackPanel>
         </Grid>
-        
-        <!--<controls:Resizer x:Name="parameterResizer" Margin="16,16,16,0"
-                          RelativePanel.AlignLeftWithPanel="True"
-                          RelativePanel.Below="pageHeader">
-
-            <TextBox MinWidth="150" MinHeight="62"
-                     Header="Parameter to pass"
-                     Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                     TextWrapping="Wrap">
-                <Interactivity:Interaction.Behaviors>
-                    --><!--  enable submit on enter key  --><!--
-                    <Behaviors:KeyBehavior Key="Enter">
-                        <Core:CallMethodAction MethodName="GotoDetailsPage" TargetObject="{Binding}" />
-                    </Behaviors:KeyBehavior>
-                    --><!--  focus on textbox when page loads  --><!--
-                    <Core:EventTriggerBehavior>
-                        <Behaviors:FocusAction />
-                    </Core:EventTriggerBehavior>
-                </Interactivity:Interaction.Behaviors>
-            </TextBox>
-
-        </controls:Resizer>
-
-        <Button x:Name="submitButton"
-                Click="{x:Bind ViewModel.GotoDetailsPage}" Content="Submit"
-                RelativePanel.AlignBottomWith="parameterResizer"
-                RelativePanel.RightOf="parameterResizer" />
-        
-        <TextBlock x:Name="stateTextBox" Margin="16,16,0,0"
-                   RelativePanel.AlignLeftWith="parameterResizer"
-                   RelativePanel.Below="parameterResizer"
-                   Text="Current Visual State" />-->
-
     </RelativePanel>
 </Page>
 

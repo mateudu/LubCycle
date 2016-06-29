@@ -17,11 +17,6 @@ namespace LubCycle.UWP.Views
         {
             InitializeComponent();
             NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
-            stationsMap.MapServiceToken = StaticData.MapServiceToken;
-            stationsMap.Center = StaticData.DefaultMapCenter;
-            stationsMap.ZoomLevel = 15.0;
-            ViewModel.MapControl = stationsMap;
-            ViewModel.PinpointFlyout = Resources["PinpointFlyout"] as MenuFlyout;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -37,21 +32,6 @@ namespace LubCycle.UWP.Views
         private void MainPage_BackRequested(object sender, BackRequestedEventArgs e)
         {
             App.Current.Exit();
-        }
-
-        private void MainPage_OnLoaded(object sender, RoutedEventArgs e)
-        {
-            ViewModel.MainPage_OnLoaded(sender,e);
-        }
-
-        private void Pinpoint_OnTapped(object sender, TappedRoutedEventArgs e)
-        {
-            ViewModel.Pinpoint_OnTapped(sender, e);
-        }
-
-        private void Pinpoint_OnRightTapped(object sender, RightTappedRoutedEventArgs e)
-        {
-            ViewModel.Pinpoint_OnTapped(sender, null);
         }
     }
 }

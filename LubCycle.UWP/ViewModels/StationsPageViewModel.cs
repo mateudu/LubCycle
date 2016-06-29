@@ -6,10 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
+using Windows.UI.Notifications;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Maps;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using LubCycle.UWP.Helpers;
 using LubCycle.UWP.Models;
@@ -21,6 +24,14 @@ namespace LubCycle.UWP.ViewModels
 {
     class StationsPageViewModel : ViewModelBase
     {
+        private readonly LubCycleHelper _lubcycleHelper;
+        public MapControl MapControl;
+        public MenuFlyout PinpointFlyout;
+        private bool _reloadRequested = false;
+        private StationsListViewItem _rightPressedItem = null;
+        public ObservableCollection<StationsListViewItem> MapItemsSource;
+        public readonly int[] BikeCountItems = new[] { 0, 1, 2, 3, 4, 5 };
+
         public StationsPageViewModel()
         {
             if (Windows.ApplicationModel.DesignMode.DesignModeEnabled)
@@ -28,8 +39,8 @@ namespace LubCycle.UWP.ViewModels
                 Value = "Designtime value";
             }
 
+            _lubcycleHelper = new LubCycleHelper();
             MapItemsSource = new ObservableCollection<StationsListViewItem>();
-            _lubcycle = new LubCycleHelper();
         }
         private string _Value = "Default";
         public string Value { get { return _Value; } set { Set(ref _Value, value); } }
@@ -38,6 +49,11 @@ namespace LubCycle.UWP.ViewModels
         {
             Value = (suspensionState.ContainsKey(nameof(Value))) ? suspensionState[nameof(Value)]?.ToString() : parameter?.ToString();
             await Task.CompletedTask;
+            if (CacheData.Position != null)
+            {
+                await MapControl.TrySetViewAsync(CacheData.Position.Coordinate.Point, 15.0);
+            }
+            LoadPageAsync();
         }
 
         public override async Task OnNavigatedFromAsync(IDictionary<string, object> suspensionState, bool suspending)
@@ -55,18 +71,53 @@ namespace LubCycle.UWP.ViewModels
             await Task.CompletedTask;
         }
 
-        public async Task OnLoaded(object sender, RoutedEventArgs e)
+        private async Task LoadPageAsync()
         {
-            await LoadPageAsync();
+            SetButtonsEnabled(false);
+            await ListHelper.LoadStationsAndPositionAsync(_reloadRequested);
+            ListHelper.ReloadList(ref MapItemsSource);
+            if (CacheData.Position != null)
+            {
+                await MapControl.TrySetViewAsync(CacheData.Position.Coordinate.Point, 15.0);
+            }
+            SetButtonsEnabled(true);
         }
 
-        ///////////////////////////////////////////////////////
-        public readonly int[] BikeCountItems = new[] { 0, 1, 2, 3, 4, 5 };
-        private readonly LubCycleHelper _lubcycle;
-        public ObservableCollection<StationsListViewItem> MapItemsSource;
+        public void GotoDetailsPage() =>
+            NavigationService.Navigate(typeof(Views.DetailPage), Value);
 
-        public MapControl MapControl;
+        public void GotoSettings() =>
+            NavigationService.Navigate(typeof(Views.SettingsPage), 0, new SuppressNavigationTransitionInfo());
 
+        //public void GotoPrivacy() =>
+        //    NavigationService.Navigate(typeof(Views.SettingsPage), 1);
+
+        public void GotoAbout() =>
+            NavigationService.Navigate(typeof(Views.SettingsPage), 1);
+
+
+        private string _addressSearch;
+
+        public string AddressSearch
+        {
+            get { return _addressSearch; }
+            set { Set(ref _addressSearch, value); }
+        }
+        private bool _searchButtonEnabled = true;
+
+        public bool SearchButtonEnabled
+        {
+            get { return _searchButtonEnabled; }
+            set { Set(ref _searchButtonEnabled, value); }
+        }
+
+        private bool _startNavigationButtonEnabled = false;
+
+        public bool StartNavigationButtonEnabled
+        {
+            get { return _startNavigationButtonEnabled; }
+            set { Set(ref _startNavigationButtonEnabled, value); }
+        }
 
         private bool _refreshButtonEnabled = false;
 
@@ -84,62 +135,146 @@ namespace LubCycle.UWP.ViewModels
             set { Set(ref _filterButtonEnabled, value); }
         }
 
-        private int SelectedBikes { get; set; } = 0;
+        private StationsListViewItem _startStation = null;
+        private StationsListViewItem _destStation = null;
 
-        private bool _reloadRequested = false;
+        public StationsListViewItem StartStation
+        {
+            get { return _startStation; }
+            set { Set(ref _startStation, value); }
+        }
+        public StationsListViewItem DestStation
+        {
+            get { return _destStation; }
+            set { Set(ref _destStation, value); }
+        }
+
+        private int SelectedBikes { get; set; } = 0;
 
         public void BikeCountPicker_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             int? number = (sender as ComboBox).SelectedItem as int?;
             if (number.HasValue)
             {
+                SetButtonsEnabled(false);
                 SelectedBikes = number.Value;
-                ListHelper.ReloadList( 
-                    ref MapItemsSource, 
-                    item => int.Parse(item.Station.Bikes)>=SelectedBikes
+                ListHelper.ReloadList(
+                    ref MapItemsSource,
+                    item => int.Parse(item.Station.Bikes) >= SelectedBikes
                     );
-            }
-        }
-        public async void RefreshButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            _reloadRequested = true;
-            await LoadPageAsync();
-            _reloadRequested = false;
-        }
-        public async Task StationsListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            // App may crash without this Try/Catch during Reloading StationsListViewItems.
-            try
-            {
-                var obj = (sender as ListView).SelectedItem as StationsListViewItem;
-                await MapControl.TrySetViewAsync(obj.Geopoint, 15.0);
-            }
-            catch (Exception)
-            {
-                // ignored
+                SetButtonsEnabled(true);
             }
         }
 
-        private async Task LoadPageAsync()
+        public async void SearchButton_OnClick(object sender, RoutedEventArgs e)
         {
-            try
+            if (!String.IsNullOrWhiteSpace(AddressSearch))
             {
-                RefreshButtonEnabled = false;
-                FilterButtonEnabled = false;
-                await ListHelper.LoadStationsAndPositionAsync(_reloadRequested);
-                ListHelper.ReloadList(ref MapItemsSource);
-                await MapControl.TrySetViewAsync(CacheData.Position != null ? CacheData.Position.Coordinate.Point : StaticData.DefaultMapCenter, 15.0);
+                try
+                {
+                    SetButtonsEnabled(false);
+                    var result = await _lubcycleHelper.GetLocationAsync(AddressSearch);
+                    var dlg = new MessageDialog($"{result.Message}");
+                    await dlg.ShowAsync();
+                }
+                catch (Exception)
+                {
+                    var dlg = new MessageDialog(@"Błąd połączenia z serwisem.");
+                    await dlg.ShowAsync();
+                }
+                finally
+                {
+                    SetButtonsEnabled(true);
+                }
             }
-            catch (Exception exc)
+        }
+
+        public void AddressSearchASB_OnTextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
             {
-                var dlg = new MessageDialog(exc.Message);
-                await dlg.ShowAsync();
+                var matchingStations = GetMatchingStations(sender.Text);
+                sender.ItemsSource = matchingStations;
             }
-            finally
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.SuggestionChosen)
             {
-                RefreshButtonEnabled = true;
-                FilterButtonEnabled = true;
+
             }
+        }
+
+        public async void AddressSearchASB_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+        {
+            if (args.SelectedItem is StationsListViewItem)
+            {
+                await MapControl.TrySetViewAsync((args.SelectedItem as StationsListViewItem).Geopoint, 15.0);
+            }
+        }
+
+        private List<StationsListViewItem> GetMatchingStations(string query)
+        {
+            return CacheData.StationListViewItems?
+                    .Where(x =>
+                        x.Station.Name.ToLower().Contains(query.ToLower())
+                        || x.Station.Number.ToString().Contains(query)
+                        ).ToList();
+        }
+
+
+        // This function MUST be invoked before NavigateToStationClick/NavigateFromStationClick,
+        // because it sets _rightPressedItem !!!
+        public void Pinpoint_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            PinpointFlyout.ShowAt(sender as FrameworkElement);
+            if ((sender as StackPanel)?.Tag is StationsListViewItem)
+            {
+                _rightPressedItem = (sender as StackPanel).Tag as StationsListViewItem;
+            }
+        }
+
+        public async void NavigateToStationClick()
+        {
+            DestStation = _rightPressedItem;
+            if (StartStation == null)
+            {
+                var toast = NotificationHelper.GetTextOnlyNotification(
+                    "Wybrano stację docelową",
+                    "Wybierz stację startową."
+                    );
+                ToastNotificationManager.CreateToastNotifier().Show(toast);
+                if (CacheData.Position != null)
+                {
+                    await MapControl.TrySetViewAsync(CacheData.Position.Coordinate.Point, 15.0);
+                }
+            }
+            else
+            {
+                StartNavigationButtonEnabled = true;
+            }
+        }
+
+        public async void NavigateFromStationClick()
+        {
+            StartStation = _rightPressedItem;
+            if (DestStation == null)
+            {
+                var toast = NotificationHelper.GetTextOnlyNotification(
+                "Wybrano stację startową",
+                "Wybierz stację docelową."
+                );
+                ToastNotificationManager.CreateToastNotifier().Show(toast);
+            }
+            else
+            {
+                StartNavigationButtonEnabled = true;
+            }
+        }
+        // END = Pinpoint click functions.
+
+        private void SetButtonsEnabled(bool val)
+        {
+            SearchButtonEnabled = val;
+            FilterButtonEnabled = val;
+            RefreshButtonEnabled = val;
         }
     }
 }

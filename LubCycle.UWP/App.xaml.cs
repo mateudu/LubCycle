@@ -6,6 +6,8 @@ using Template10.Controls;
 using Template10.Common;
 using System;
 using System.Linq;
+using Windows.Foundation.Metadata;
+using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml.Controls;
@@ -50,6 +52,54 @@ namespace LubCycle.UWP
                     ModalContent = new Views.Busy(),
                 };
             }
+
+            // Assign brushes
+            try
+            {
+                if (this.Resources["CustomColor"] != null)
+                {
+                    CacheData.CustomColor = (Color) this.Resources["CustomColor"];
+                }
+                if (this.Resources["ContrastColor"] != null)
+                {
+                    CacheData.ContrastColor = (Color)this.Resources["ContrastColor"];
+                }
+                if (this.Resources["SystemAccentColor"] != null)
+                {
+                    CacheData.SystemAccentColor = (Color)this.Resources["SystemAccentColor"];
+                }
+            }
+            catch (Exception)
+            {
+                
+            }
+
+            //PC customization
+            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.ApplicationView"))
+            {
+                var titleBar = ApplicationView.GetForCurrentView().TitleBar;
+                if (titleBar != null)
+                {
+                    titleBar.ButtonBackgroundColor = CacheData.SystemAccentColor;
+                    titleBar.ButtonForegroundColor = CacheData.ContrastColor;
+                    titleBar.BackgroundColor = CacheData.CustomColor;
+                    titleBar.ForegroundColor = CacheData.ContrastColor;
+                }
+            }
+
+            //Mobile customization
+            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+            {
+
+                var statusBar = StatusBar.GetForCurrentView();
+                if (statusBar != null)
+                {
+                    statusBar.BackgroundOpacity = 1;
+                    statusBar.BackgroundColor = CacheData.CustomColor;
+                    statusBar.ForegroundColor = CacheData.ContrastColor;
+                }
+            }
+
             await Task.CompletedTask;
         }
 
