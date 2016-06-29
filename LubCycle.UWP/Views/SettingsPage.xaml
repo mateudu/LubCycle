@@ -8,7 +8,8 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="using:LubCycle.UWP.Views"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:vm="using:LubCycle.UWP.ViewModels" mc:Ignorable="d">
+      xmlns:vm="using:LubCycle.UWP.ViewModels"
+      mc:Ignorable="d">
 
     <Page.DataContext>
         <vm:SettingsPageViewModel x:Name="ViewModel" />
@@ -47,14 +48,16 @@
         </VisualStateManager.VisualStateGroups>
 
         <!--  header  -->
-        <controls:PageHeader x:Name="pageHeader" Content="Settings Page"
+        <controls:PageHeader x:Name="pageHeader"
+                             Content="Ustawienia"
                              Frame="{x:Bind Frame}"
                              RelativePanel.AlignLeftWithPanel="True"
                              RelativePanel.AlignRightWithPanel="True"
                              RelativePanel.AlignTopWithPanel="True" />
 
         <!--  content  -->
-        <Pivot x:Name="MyPivot" Grid.Row="1"
+        <Pivot x:Name="MyPivot"
+               Grid.Row="1"
                RelativePanel.AlignBottomWithPanel="True"
                RelativePanel.AlignLeftWithPanel="True"
                RelativePanel.AlignRightWithPanel="True"
@@ -62,7 +65,8 @@
 
             <!--  settings  -->
             <PivotItem DataContext="{Binding SettingsPartViewModel}" Header="Ustawienia">
-                <ScrollViewer Margin="0,12,-12,0" HorizontalContentAlignment="Left"
+                <ScrollViewer Margin="0,12,-12,0"
+                              HorizontalContentAlignment="Left"
                               VerticalScrollBarVisibility="Auto">
                     <RelativePanel HorizontalAlignment="Left">
 
@@ -92,8 +96,8 @@
                                 RelativePanel.AlignBottomWith="BusyTextTextBox"
                                 RelativePanel.RightOf="BusyTextTextBox" />-->
                         <HyperlinkButton x:Name="LocationSettingsButton"
-                                Content="Ustawienia lokalizacji"
-                                Click="{x:Bind ViewModel.SettingsPartViewModel.GotoLocationSettings}"/>
+                                         Click="{x:Bind ViewModel.SettingsPartViewModel.GotoLocationSettings}"
+                                         Content="Ustawienia lokalizacji" />
                     </RelativePanel>
 
                 </ScrollViewer>
@@ -142,20 +146,26 @@
             <PivotItem Header="O aplikacji">
                 <RelativePanel DataContext="{Binding AboutPartViewModel}">
 
-                    <Border x:Name="LogoImage" HorizontalAlignment="Right"
-                            VerticalAlignment="Top" BorderBrush="DimGray"
-                            BorderThickness="1" IsHitTestVisible="False"
+                    <Border x:Name="LogoImage"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+                            BorderBrush="DimGray"
+                            BorderThickness="1"
+                            IsHitTestVisible="False"
                             RelativePanel.AlignRightWithPanel="True"
                             RelativePanel.AlignTopWithPanel="True">
                         <Border.Background>
                             <SolidColorBrush Color="{ThemeResource SystemAccentColor}" />
                         </Border.Background>
-                        <Image Margin="12" Source="{Binding Logo}"
+                        <Image Margin="12"
+                               Source="{Binding Logo}"
                                Stretch="None" />
                     </Border>
 
-                    <TextBlock x:Name="DisplayNameTextBlock" Margin="0,0,0,12"
-                               FontSize="24" RelativePanel.AlignLeftWithPanel="True"
+                    <TextBlock x:Name="DisplayNameTextBlock"
+                               Margin="0,0,0,12"
+                               FontSize="24"
+                               RelativePanel.AlignLeftWithPanel="True"
                                RelativePanel.AlignRightWith="LogoImage"
                                RelativePanel.AlignTopWithPanel="True"
                                Text="{Binding DisplayName}" />

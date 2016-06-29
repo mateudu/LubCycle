@@ -33,7 +33,7 @@ namespace LubCycle.UWP.Views
             _SerializationService = Template10.Services.SerializationService.SerializationService.Json;
             stationsMap.MapServiceToken = StaticData.MapServiceToken;
             stationsMap.Center = StaticData.DefaultMapCenter;
-            stationsMap.ZoomLevel = 15.0;
+            stationsMap.ZoomLevel = StaticData.DefaultMapZoom;
             ViewModel.MapControl = stationsMap;
             ViewModel.PinpointFlyout = Resources["PinpointFlyout"] as MenuFlyout;
         }

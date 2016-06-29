@@ -537,16 +537,3 @@ body {
 }
 
 /*END OF SOCIAL SECTION*/
-
-#top-link-block.affix-top {
-    position: absolute; /* allows it to "slide" up into view */
-    bottom: -150px;
-    right: 10px;
-    z-index: 100;
-}
-#top-link-block.affix {
-    position: fixed; /* keeps it on the bottom once in view */
-    bottom: 18px;
-    right: 10px;
-    z-index: 100;
-}

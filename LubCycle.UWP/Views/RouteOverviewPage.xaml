@@ -31,16 +31,89 @@
                              RelativePanel.AlignRightWithPanel="True"
                              RelativePanel.AlignBottomWithPanel="True"
                              Text="">
-            <controls:PageHeader.PrimaryCommands>
+            <!--<controls:PageHeader.PrimaryCommands>
                 <AppBarButton Icon="Flag"
                               Label="Start"/>
                 <AppBarSeparator/>
                 <AppBarButton Icon="Cancel"
                               Label="Anuluj"/>
-            </controls:PageHeader.PrimaryCommands>
+            </controls:PageHeader.PrimaryCommands>-->
         </controls:PageHeader>
+        <Grid RelativePanel.Below="pageHeader"
+               RelativePanel.AlignLeftWithPanel="True"
+               RelativePanel.AlignRightWithPanel="True"
+               RelativePanel.Above="pageFooter">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <maps:MapControl Grid.Row="0" x:Name="routeMap">
+                <maps:MapItemsControl ItemsSource="{x:Bind ViewModel.MapItemsSource, Mode=OneWay}">
+                    <maps:MapItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="models:StationsListViewItem">
+                            <StackPanel maps:MapControl.Location="{x:Bind Geopoint, Mode=OneWay}" maps:MapControl.NormalizedAnchorPoint="{x:Bind AnchorPoint, Mode=OneWay}">
+                                <StackPanel MaxWidth="120"
+                                            Background="{ThemeResource CustomColorBrush}"
+                                            >
+                                    <TextBlock FontSize="10"
+                                               Foreground="{ThemeResource ContrastColorBrush}"
+                                               Padding="5,5,5,0"
+                                               Text="{x:Bind Station.Name, Mode=OneWay}"
+                                               TextWrapping="WrapWholeWords" />
+                                    <TextBlock FontSize="8"
+                                               Foreground="{ThemeResource ContrastColorBrush}"
+                                               Opacity="0.8"
+                                               Padding="5,0,0,5">
+                                        <Run>Rowery:</Run>
+                                        <Run Text="{x:Bind Station.Bikes, Mode=OneWay}" />
+                                    </TextBlock>
+                                </StackPanel>
+                                <Polygon Fill="{ThemeResource CustomColorBrush}" Points="0,0 30,0 0,50" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </maps:MapItemsControl.ItemTemplate>
+                </maps:MapItemsControl>
+            </maps:MapControl>
+            <ListView Grid.Row="1" ItemsSource="{x:Bind ViewModel.MapItemsSource}"
+                      HorizontalAlignment="Stretch">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="Padding" Value="0"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="models:StationsListViewItem">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{x:Bind Station.Name}" 
+                                       Padding="5"
+                                     TextWrapping="WrapWholeWords"/>
+                            <Button Grid.Column="1" Background="Red" Tag="{x:Bind}"
+                                    Click="RemoveSLVI_OnClick">
+                                <Button.Content>
+                                    <SymbolIcon Symbol="Delete" Height="40" Width="40"
+                                                Foreground="{StaticResource ContrastColorBrush}"/>
+                                </Button.Content>
+                            </Button>
+                            <Button Grid.Column="2" Background="DodgerBlue" Tag="{x:Bind}"
+                                    Click="NavigateSLVI_OnClick">
+                                <Button.Content>
+                                    <SymbolIcon Symbol="Flag" Height="40" Width="40"
+                                                Foreground="{StaticResource ContrastColorBrush}"/>
+                                </Button.Content>
+                            </Button>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
         
-        <StackPanel RelativePanel.Below="pageHeader"
+        <!--<StackPanel RelativePanel.Below="pageHeader"
                     RelativePanel.AlignLeftWithPanel="True"
                     RelativePanel.AlignRightWithPanel="True"
                     RelativePanel.Above="pageFooter"
@@ -89,6 +162,6 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-        </StackPanel>
+        </StackPanel>-->
     </RelativePanel>
 </Page>

@@ -7,6 +7,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Maps;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
@@ -25,6 +26,17 @@ namespace LubCycle.UWP.Views
         public RouteOverviewPage()
         {
             this.InitializeComponent();
+            routeMap.MapServiceToken = StaticData.MapServiceToken;
+            ViewModel.MapControl = routeMap;
+        }
+
+        public void RemoveSLVI_OnClick(object sender, RoutedEventArgs e)
+        {
+            ViewModel.RemoveSLVI_OnClick(sender,e);
+        }
+        public void NavigateSLVI_OnClick(object sender, RoutedEventArgs e)
+        {
+            ViewModel.NavigateSLVI_OnClick(sender,e);
         }
     }
 }

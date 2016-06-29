@@ -51,7 +51,7 @@ namespace LubCycle.UWP.ViewModels
             await Task.CompletedTask;
             if (CacheData.Position != null)
             {
-                await MapControl.TrySetViewAsync(CacheData.Position.Coordinate.Point, 15.0);
+                await MapControl.TrySetViewAsync(CacheData.Position.Coordinate.Point, StaticData.DefaultMapZoom);
             }
             LoadPageAsync();
         }
@@ -80,7 +80,7 @@ namespace LubCycle.UWP.ViewModels
                 );
             if (CacheData.Position != null)
             {
-                await MapControl.TrySetViewAsync(CacheData.Position.Coordinate.Point, 15.0);
+                await MapControl.TrySetViewAsync(CacheData.Position.Coordinate.Point, StaticData.DefaultMapZoom);
             }
             SetButtonsEnabled(true);
         }
@@ -193,7 +193,7 @@ namespace LubCycle.UWP.ViewModels
         {
             if (args.SelectedItem is StationsListViewItem)
             {
-                await MapControl.TrySetViewAsync((args.SelectedItem as StationsListViewItem).Geopoint, 15.0);
+                await MapControl.TrySetViewAsync((args.SelectedItem as StationsListViewItem).Geopoint, StaticData.DefaultMapZoom);
             }
         }
 
@@ -220,7 +220,7 @@ namespace LubCycle.UWP.ViewModels
             if (CacheData.Position != null)
             {
                 SetButtonsEnabled(false);
-                await MapControl.TrySetViewAsync(CacheData.Position.Coordinate.Point, 15.0);
+                await MapControl.TrySetViewAsync(CacheData.Position.Coordinate.Point, StaticData.DefaultMapZoom);
                 SetButtonsEnabled(true);
             }
         }
@@ -281,7 +281,7 @@ namespace LubCycle.UWP.ViewModels
                 ToastNotificationManager.CreateToastNotifier().Show(toast);
                 if (CacheData.Position != null)
                 {
-                    await MapControl.TrySetViewAsync(CacheData.Position.Coordinate.Point, 15.0);
+                    await MapControl.TrySetViewAsync(CacheData.Position.Coordinate.Point, StaticData.DefaultMapZoom);
                 }
             }
             else
