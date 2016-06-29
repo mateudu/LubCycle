@@ -34,43 +34,39 @@ namespace LubCycle.UWP.Helpers
             if (reloadRequested == true || CacheData.Stations == null || CacheData.Stations.Count == 0 || 
                 CacheData.StationListViewItems==null || CacheData.StationListViewItems.Count==0)
             {
-                try
-                {
-                    var stations = new LubCycleHelper().GetStationsAsync();
-                    await Task.WhenAll(pos, stations);
+                var stations = new LubCycleHelper().GetStationsAsync();
+                await Task.WhenAll(pos, stations);
 
-                    CacheData.Position = pos.Result ?? CacheData.Position;
-                    CacheData.Stations = stations.Result ?? CacheData.Stations;
-                    if (CacheData.Stations != null)
+                CacheData.Position = pos.Result ?? CacheData.Position;
+                CacheData.Stations = stations.Result ?? CacheData.Stations;
+                if (CacheData.Stations != null)
+                {
+                    CacheData.StationListViewItems = new List<StationsListViewItem>();
+                    foreach (var obj in CacheData.Stations)
                     {
-                        CacheData.StationListViewItems = new List<StationsListViewItem>();
-                        foreach (var obj in CacheData.Stations)
-                        {
-                            if (obj.Bikes == @"5+")
-                                obj.Bikes = "5";
-                            CacheData.StationListViewItems.Add(
-                                new StationsListViewItem()
-                                {
-                                    Geopoint = new Geopoint(
-                                        new BasicGeoposition()
-                                        {
-                                            Latitude = obj.Lat,
-                                            Longitude = obj.Lng,
-                                        }),
-                                    Station = obj,
-                                    Distance = GeoHelper.CalcDistanceInMeters(
-                                        CacheData.Position?.Coordinate.Point.Position.Latitude,
-                                        CacheData.Position?.Coordinate.Point.Position.Longitude,
-                                        obj.Lat,
-                                        obj.Lng)
-                                });
-                        }
+                        if (obj.Bikes == @"5+")
+                            obj.Bikes = "5";
+                        CacheData.StationListViewItems.Add(
+                            new StationsListViewItem()
+                            {
+                                Geopoint = new Geopoint(
+                                    new BasicGeoposition()
+                                    {
+                                        Latitude = obj.Lat,
+                                        Longitude = obj.Lng,
+                                    }),
+                                Station = obj,
+                                Distance = GeoHelper.CalcDistanceInMeters(
+                                    CacheData.Position?.Coordinate.Point.Position.Latitude,
+                                    CacheData.Position?.Coordinate.Point.Position.Longitude,
+                                    obj.Lat,
+                                    obj.Lng)
+                            });
                     }
                 }
-                catch (Exception)
+                else
                 {
-                    var dlg = new MessageDialog("Wystąpił problem z połączeniem z serwisem.");
-                    await dlg.ShowAsync();
+                    throw new Exception("API connection failure.");
                 }
             }
             else

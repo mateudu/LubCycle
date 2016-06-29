@@ -73,16 +73,27 @@ namespace LubCycle.UWP.ViewModels
 
         private async Task LoadPageAsync()
         {
-            SetButtonsEnabled(false);
-            await ListHelper.LoadStationsAndPositionAsync(false);
-            ListHelper.ReloadList(ref MapItemsSource, 
-                item => int.Parse(item.Station.Bikes) >= SelectedBikes
-                );
-            if (CacheData.Position != null)
+            try
             {
-                await MapControl.TrySetViewAsync(CacheData.Position.Coordinate.Point, StaticData.DefaultMapZoom);
+                SetButtonsEnabled(false);
+                await ListHelper.LoadStationsAndPositionAsync(false);
+                ListHelper.ReloadList(ref MapItemsSource,
+                    item => int.Parse(item.Station.Bikes) >= SelectedBikes
+                    );
+                if (CacheData.Position != null)
+                {
+                    await MapControl.TrySetViewAsync(CacheData.Position.Coordinate.Point, StaticData.DefaultMapZoom);
+                }
             }
-            SetButtonsEnabled(true);
+            catch (Exception)
+            {
+                var dlg = new MessageDialog("Błąd połączenia.");
+                await dlg.ShowAsync();
+            }
+            finally
+            {
+                SetButtonsEnabled(true);
+            }
         }
 
         public void GotoDetailsPage() =>
@@ -123,18 +134,29 @@ namespace LubCycle.UWP.ViewModels
 
         private int SelectedBikes { get; set; } = 0;
 
-        public void BikeCountPicker_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        public async void BikeCountPicker_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             int? number = (sender as ComboBox).SelectedItem as int?;
             if (number.HasValue)
             {
-                SetButtonsEnabled(false);
-                SelectedBikes = number.Value;
-                ListHelper.ReloadList(
-                    ref MapItemsSource,
-                    item => int.Parse(item.Station.Bikes) >= SelectedBikes
-                    );
-                SetButtonsEnabled(true);
+                try
+                {
+                    SetButtonsEnabled(false);
+                    SelectedBikes = number.Value;
+                    ListHelper.ReloadList(
+                        ref MapItemsSource,
+                        item => int.Parse(item.Station.Bikes) >= SelectedBikes
+                        );
+                }
+                catch
+                {
+                    var dlg = new MessageDialog("Błąd połączenia.");
+                    await dlg.ShowAsync();
+                }
+                finally
+                {
+                    SetButtonsEnabled(true);
+                }
             }
         }
 
@@ -166,8 +188,7 @@ namespace LubCycle.UWP.ViewModels
                 }
                 catch (Exception)
                 {
-                    var dlg = new MessageDialog(@"Błąd połączenia z serwisem.");
-                    await dlg.ShowAsync();
+                    
                 }
                 finally
                 {
@@ -208,12 +229,23 @@ namespace LubCycle.UWP.ViewModels
         
         public async void RefreshButton_OnClick(object sender, RoutedEventArgs e)
         {
-            SetButtonsEnabled(false);
-            await ListHelper.LoadStationsAndPositionAsync(true);
-            ListHelper.ReloadList(ref MapItemsSource,
-                item => int.Parse(item.Station.Bikes) >= SelectedBikes
-                );
-            SetButtonsEnabled(true);
+            try
+            {
+                SetButtonsEnabled(false);
+                await ListHelper.LoadStationsAndPositionAsync(true);
+                ListHelper.ReloadList(ref MapItemsSource,
+                    item => int.Parse(item.Station.Bikes) >= SelectedBikes
+                    );
+            }
+            catch
+            {
+                var dlg = new MessageDialog(@"Błąd połączenia z serwisem.");
+                await dlg.ShowAsync();
+            }
+            finally
+            {
+                SetButtonsEnabled(true);
+            }
         }
         public async void PositionButton_OnClick(object sender, RoutedEventArgs e)
         {
