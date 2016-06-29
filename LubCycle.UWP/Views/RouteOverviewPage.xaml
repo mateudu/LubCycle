@@ -1,0 +1,94 @@
+﻿<Page
+    x:Class="LubCycle.UWP.Views.RouteOverviewPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Behaviors="using:Template10.Behaviors"
+    xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:controls="using:Template10.Controls"  
+    xmlns:local="using:LubCycle.UWP.Views"
+    xmlns:maps="using:Windows.UI.Xaml.Controls.Maps"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:LubCycle.UWP.Models"
+    xmlns:vm="using:LubCycle.UWP.ViewModels"
+    mc:Ignorable="d">
+
+    <Page.DataContext>
+        <vm:RouteOverviewPageViewModel x:Name="ViewModel" />
+    </Page.DataContext>
+    
+    <RelativePanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <controls:PageHeader x:Name="pageHeader"
+                             RelativePanel.AlignLeftWithPanel="True"
+                             RelativePanel.AlignRightWithPanel="True"
+                             RelativePanel.AlignTopWithPanel="True"
+                             Text="Trasa">
+        </controls:PageHeader>
+
+        <controls:PageHeader x:Name="pageFooter"
+                             RelativePanel.AlignLeftWithPanel="True"
+                             RelativePanel.AlignRightWithPanel="True"
+                             RelativePanel.AlignBottomWithPanel="True"
+                             Text="">
+            <controls:PageHeader.PrimaryCommands>
+                <AppBarButton Icon="Flag"
+                              Label="Start"/>
+                <AppBarSeparator/>
+                <AppBarButton Icon="Cancel"
+                              Label="Anuluj"/>
+            </controls:PageHeader.PrimaryCommands>
+        </controls:PageHeader>
+        
+        <StackPanel RelativePanel.Below="pageHeader"
+                    RelativePanel.AlignLeftWithPanel="True"
+                    RelativePanel.AlignRightWithPanel="True"
+                    RelativePanel.Above="pageFooter"
+                    >
+            <TextBlock>
+                <Run Text="Message"/>
+                <Run Text="{x:Bind ViewModel.Route.Message}"/>
+            </TextBlock>
+            <TextBlock>
+                <Run Text="StartTime"/>
+                <Run Text="{x:Bind ViewModel.Route.StartTime}"/>
+            </TextBlock>
+            <TextBlock>
+                <Run Text="EndTime"/>
+                <Run Text="{x:Bind ViewModel.Route.EndTime}"/>
+            </TextBlock>
+            <TextBlock>
+                <Run Text="Duration"/>
+                <Run Text="{x:Bind ViewModel.Route.Duration}"/>
+            </TextBlock>
+            <TextBlock>
+                <Run Text="Distance"/>
+                <Run Text="{x:Bind ViewModel.Route.Distance}"/>
+            </TextBlock>
+            <ListView ItemsSource="{x:Bind ViewModel.Route.Stations}">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Place">
+                        <StackPanel Margin="5">
+                            <TextBlock>
+                                <Run Text="Name"/>
+                                <Run Text="{x:Bind Name}"/>
+                            </TextBlock>
+                            <TextBlock>
+                                <Run Text="Number"/>
+                                <Run Text="{x:Bind Number}"/>
+                            </TextBlock>
+                            <TextBlock>
+                                <Run Text="Uid"/>
+                                <Run Text="{x:Bind Uid}"/>
+                            </TextBlock>
+                            <TextBlock>
+                                <Run Text="Bikes"/>
+                                <Run Text="{x:Bind Bikes}"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+    </RelativePanel>
+</Page>

@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using LubCycle.UWP.Helpers;
 using LubCycle.UWP.Models;
+using LubCycle.UWP.Views;
 using Template10.Mvvm;
 using Template10.Services.NavigationService;
 using Template10.Utils;
@@ -27,7 +28,6 @@ namespace LubCycle.UWP.ViewModels
         private readonly LubCycleHelper _lubcycleHelper;
         public MapControl MapControl;
         public MenuFlyout PinpointFlyout;
-        private bool _reloadRequested = false;
         private StationsListViewItem _rightPressedItem = null;
         public ObservableCollection<StationsListViewItem> MapItemsSource;
         public readonly int[] BikeCountItems = new[] { 0, 1, 2, 3, 4, 5 };
@@ -74,8 +74,10 @@ namespace LubCycle.UWP.ViewModels
         private async Task LoadPageAsync()
         {
             SetButtonsEnabled(false);
-            await ListHelper.LoadStationsAndPositionAsync(_reloadRequested);
-            ListHelper.ReloadList(ref MapItemsSource);
+            await ListHelper.LoadStationsAndPositionAsync(false);
+            ListHelper.ReloadList(ref MapItemsSource, 
+                item => int.Parse(item.Station.Bikes) >= SelectedBikes
+                );
             if (CacheData.Position != null)
             {
                 await MapControl.TrySetViewAsync(CacheData.Position.Coordinate.Point, 15.0);
@@ -103,37 +105,7 @@ namespace LubCycle.UWP.ViewModels
             get { return _addressSearch; }
             set { Set(ref _addressSearch, value); }
         }
-        private bool _searchButtonEnabled = true;
-
-        public bool SearchButtonEnabled
-        {
-            get { return _searchButtonEnabled; }
-            set { Set(ref _searchButtonEnabled, value); }
-        }
-
-        private bool _startNavigationButtonEnabled = false;
-
-        public bool StartNavigationButtonEnabled
-        {
-            get { return _startNavigationButtonEnabled; }
-            set { Set(ref _startNavigationButtonEnabled, value); }
-        }
-
-        private bool _refreshButtonEnabled = false;
-
-        public bool RefreshButtonEnabled
-        {
-            get { return _refreshButtonEnabled; }
-            set { Set(ref _refreshButtonEnabled, value); }
-        }
-
-        private bool _filterButtonEnabled = false;
-
-        public bool FilterButtonEnabled
-        {
-            get { return _filterButtonEnabled; }
-            set { Set(ref _filterButtonEnabled, value); }
-        }
+        
 
         private StationsListViewItem _startStation = null;
         private StationsListViewItem _destStation = null;
@@ -174,8 +146,23 @@ namespace LubCycle.UWP.ViewModels
                 {
                     SetButtonsEnabled(false);
                     var result = await _lubcycleHelper.GetLocationAsync(AddressSearch);
-                    var dlg = new MessageDialog($"{result.Message}");
-                    await dlg.ShowAsync();
+                    if (result.Status != LocationResponseStatus.Ok)
+                    {
+                        var dlg = new MessageDialog(@"Błąd zapytania.");
+                        await dlg.ShowAsync();
+                    }
+                    else
+                    {
+                        await MapControl.TrySetViewAsync(
+                            new Geopoint(
+                                new BasicGeoposition()
+                                {
+                                    Latitude = result.Lat.Value,
+                                    Longitude = result.Lng.Value
+                                })
+                            );
+                    }
+
                 }
                 catch (Exception)
                 {
@@ -218,8 +205,59 @@ namespace LubCycle.UWP.ViewModels
                         || x.Station.Number.ToString().Contains(query)
                         ).ToList();
         }
+        
+        public async void RefreshButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            SetButtonsEnabled(false);
+            await ListHelper.LoadStationsAndPositionAsync(true);
+            ListHelper.ReloadList(ref MapItemsSource,
+                item => int.Parse(item.Station.Bikes) >= SelectedBikes
+                );
+            SetButtonsEnabled(true);
+        }
+        public async void PositionButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (CacheData.Position != null)
+            {
+                SetButtonsEnabled(false);
+                await MapControl.TrySetViewAsync(CacheData.Position.Coordinate.Point, 15.0);
+                SetButtonsEnabled(true);
+            }
+        }
 
+        public async void StartNavigationButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (StartStation != null && DestStation != null)
+            {
+                try
+                {
+                    Views.Busy.SetBusy(true, @"Ładowanie...");
+                    var res = await _lubcycleHelper.GetRouteAsync(StartStation.Station.Number, DestStation.Station.Number);
+                    CacheData.CurrentStartStation = StartStation;
+                    CacheData.CurrentDestStation = DestStation;
+                    CacheData.CurrentRoute = res;
+                }
+                catch (Exception)
+                {
 
+                }
+                finally
+                {
+                    Views.Busy.SetBusy(false);
+                    NavigationService.Navigate(typeof(RouteOverviewPage), null, new SuppressNavigationTransitionInfo());
+                }
+            }
+        }
+        
+        private void SetButtonsEnabled(bool val)
+        {
+            SearchButtonEnabled = val;
+            FilterButtonEnabled = val;
+            RefreshButtonEnabled = val;
+            PositionButtonEnabled = val;
+        }
+
+        #region Pinpoint events
         // This function MUST be invoked before NavigateToStationClick/NavigateFromStationClick,
         // because it sets _rightPressedItem !!!
         public void Pinpoint_OnTapped(object sender, TappedRoutedEventArgs e)
@@ -269,12 +307,48 @@ namespace LubCycle.UWP.ViewModels
             }
         }
         // END = Pinpoint click functions.
+        #endregion
 
-        private void SetButtonsEnabled(bool val)
+        #region ButtonEnabled Properties
+        private bool _searchButtonEnabled = true;
+
+        public bool SearchButtonEnabled
         {
-            SearchButtonEnabled = val;
-            FilterButtonEnabled = val;
-            RefreshButtonEnabled = val;
+            get { return _searchButtonEnabled; }
+            set { Set(ref _searchButtonEnabled, value); }
         }
+
+        private bool _startNavigationButtonEnabled = false;
+
+        public bool StartNavigationButtonEnabled
+        {
+            get { return _startNavigationButtonEnabled; }
+            set { Set(ref _startNavigationButtonEnabled, value); }
+        }
+
+        private bool _refreshButtonEnabled = false;
+
+        public bool RefreshButtonEnabled
+        {
+            get { return _refreshButtonEnabled; }
+            set { Set(ref _refreshButtonEnabled, value); }
+        }
+
+        private bool _filterButtonEnabled = false;
+
+        public bool FilterButtonEnabled
+        {
+            get { return _filterButtonEnabled; }
+            set { Set(ref _filterButtonEnabled, value); }
+        }
+
+        private bool _positionButtonEnabled = false;
+
+        public bool PositionButtonEnabled
+        {
+            get { return _positionButtonEnabled; }
+            set { Set(ref _positionButtonEnabled, value); }
+        }
+        #endregion
     }
 }
