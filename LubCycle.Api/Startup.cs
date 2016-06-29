@@ -152,14 +152,14 @@ namespace LubCycle.Api
 
             app.UseStaticFiles(new StaticFileOptions()
             {
-                OnPrepareResponse = context =>
-                {
-                    var headers = context.Context.Response.GetTypedHeaders();
-                    headers.CacheControl = new CacheControlHeaderValue()
-                    {
-                        MaxAge = TimeSpan.FromMinutes(60)
-                    };
-                }
+                //OnPrepareResponse = context =>
+                //{
+                //    var headers = context.Context.Response.GetTypedHeaders();
+                //    headers.CacheControl = new CacheControlHeaderValue()
+                //    {
+                //        MaxAge = TimeSpan.FromMinutes(60)
+                //    };
+                //}
             });
 
             app.UseIdentity();

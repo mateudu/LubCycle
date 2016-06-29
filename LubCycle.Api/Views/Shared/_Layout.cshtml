@@ -4,158 +4,174 @@
 
 <head>
     <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="author" content="Mateusz Dudek">
 
     <title>@ViewData["Title"] - Material Design Bootstrap</title>
 
     <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css"
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
           asp-fallback-href="~/lib/bootstrap-alpha/bootstrap.min.css"
-          asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute">
-    @*<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">*@
+          asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute"
+          type="text/css">
 
-    <!-- Font Awesome -->
+    <!-- MDB CSS -->
+    @*<link href="~/css/mdb.min.css" rel="stylesheet" type="text/css"/>*@
+
+    <!-- Custom Fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"
-          asp-fallback-href="~/lib/font-awesome/css/font-awesome.min.css">
+          asp-fallback-href="~/lib/font-awesome/css/font-awesome.min.css"
+          type="text/css">
 
-    <!-- Material Design Bootstrap -->
-    <link href="~/lib/mdb/mdb.min.css" rel="stylesheet">
+    <!-- Plugin CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css" type="text/css"/>
 
-    <!-- Template styles -->
-    <link href="~/css/style.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="~/css/creative.css" type="text/css">
 
-    
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
 
     <!-- Material Design Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
-<body>
-    <!--Navbar-->
-    <nav class="navbar navbar-dark navbar-fixed-top scrolling-navbar bg-primary green">
+<body id="page-top">
+    <!-- child of the body tag -->
+    <a href="#top" id="top-link-block" class="hidden"  onclick="$('html,body').animate({scrollTop:0},'slow');return false;">
+        <i class="fa fa-chevron-circle-up fa-5x"></i>
+    </a>
+    <!-- /top-link-block -->
 
-        <!-- Collapse button-->
-        <button class="navbar-toggler hidden-sm-up" type="button" data-toggle="collapse" data-target="#collapseEx">
-            <i class="fa fa-bars"></i>
-        </button>
+    <nav id="mainNav" class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand page-scroll" asp-controller="Home" asp-action="Index">LubCycle</a>
+            </div>
 
-        <div class="container">
-
-            <!--Collapse content-->
-            <div class="collapse navbar-toggleable-xs" id="collapseEx">
-                <!--Navbar Brand-->
-                <a class="navbar-brand" asp-controller="Home" asp-action="Index">LubCycle</a>
-                <!--Links-->
-                <ul class="nav navbar-nav">
-                    <li class="nav-item active">
-                        <a class="nav-link" asp-controller="Home" asp-action="Index">Start<span class="sr-only">(current)</span></a>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a asp-controller="Home" asp-action="About">O Aplikacji</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Nawigacja</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Home" asp-action="About">O nas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Home" asp-action="Contact">Kontakt</a>
+                    @*<li>
+                            <a class="page-scroll" href="#portfolio">Portfolio</a>
+                        </li>*@
+                    <li>
+                        <a class="page-scroll" href="#contact">Kontakt</a>
                     </li>
                 </ul>
-                <!--Search form-->
-                <form class="form-inline">
-                    <input class="form-control" type="text" placeholder="Szukaj">
-                </form>
             </div>
-            <!--/.Collapse content-->
-
+            <!-- /.navbar-collapse -->
         </div>
-
+        <!-- /.container-fluid -->
     </nav>
-    <!--/.Navbar-->
-    
-    @RenderBody()
-    
-    <!--Footer-->
-    <footer class="page-footer green center-on-small-only">
 
-        <!--Footer Links-->
+    @RenderBody()
+
+    <aside class="bg-dark">
+        <div class="container text-center">
+            <div class="call-to-action">
+                <h2>Pobierz już dziś!</h2>
+                <a href="http://startbootstrap.com/template-overviews/creative/" class="btn btn-default btn-xl sr-button">Download Now!</a>
+            </div>
+        </div>
+    </aside>
+
+    <section id="contact">
         <div class="container">
             <div class="row">
-
-                <!--First column-->
-                <div class="col-md-6">
-                    <h5 class="title">Linki</h5>
+                <div class="col-lg-8 col-lg-offset-2 text-center">
+                    <h2 class="section-heading">Skontaktuj się z nami!</h2>
+                    <hr class="primary">
+                    <p>Odpowiadamy na wszystkie wiadomości tak szybko jak to możliwe.</p>
+                </div>
+                @*<div class="col-lg-4 text-center">
+                        <i class="fa fa-phone fa-3x sr-contact"></i>
+                        <p>123-456-6789</p>
+                    </div>*@
+                <div class="col-lg-4 text-center col-lg-offset-2">
+                    <i class="fa fa-envelope-o fa-3x sr-contact"></i>
+                    <p>
+                        <a href="mailto:mateusz.dudek@hotmail.com">mateusz.dudek@hotmail.com</a>
+                    </p>
+                </div>
+                <div class="social col-lg-4 text-center">
                     <ul>
-                        <li><a href="/swagger/ui">Swagger</a></li>
-                        @*<li><a href="#!">Link 3</a></li>
-                <li><a href="#!">Link 4</a></li>*@
+                        <li><a href="#"><i class="fa fa-lg fa-facebook"></i></a></li>
+                        <li><a href="#"><i class="fa fa-lg fa-twitter"></i></a></li>
+                        @*<li><a href="#"><i class="fa fa-lg fa-google-plus"></i></a></li>*@
+                        <li><a href="https://github.com/mateudu" target="_blank"><i class="fa fa-lg fa-github"></i></a></li>
+                        @*<li><a href="#"><i class="fa fa-lg fa-pinterest"></i></a></li>*@
+                        @*<li><a href="#"><i class="fa fa-lg fa-linkedin"></i></a></li>
+                            <li><a href="#"><i class="fa fa-lg fa-flickr"></i></a></li>
+                            <li><a href="#"><i class="fa fa-lg fa-instagram"></i></a></li>
+                            <li><a href="#"><i class="fa fa-lg fa-vimeo-square"></i></a></li>
+                            <li><a href="#"><i class="fa fa-lg fa-stack-overflow"></i></a></li>
+                            <li><a href="#"><i class="fa fa-lg fa-dropbox"></i></a></li>
+                            <li><a href="#"><i class="fa fa-lg fa-tumblr"></i></a></li>
+                            <li><a href="#"><i class="fa fa-lg fa-dribbble"></i></a></li>
+                            <li><a href="#"><i class="fa fa-lg fa-skype"></i></a></li>
+                            <li><a href="#"><i class="fa fa-lg fa-stack-exchange"></i></a></li>
+                            <li><a href="#"><i class="fa fa-lg fa-youtube"></i></a></li>
+                            <li><a href="#"><i class="fa fa-lg fa-xing"></i></a></li>
+                            <li><a href="#"><i class="fa fa-lg fa-rss"></i></a></li>
+                            <li><a href="#"><i class="fa fa-lg fa-foursquare"></i></a></li>
+                            <li><a href="#"><i class="fa fa-lg fa-youtube-play"></i></a></li>*@
                     </ul>
                 </div>
-                <!--/.First column-->
-                <!--Second column-->
-                <div class="col-md-6">
-                    <h5 class="title">Znajdź nas!</h5>
-                    @*<p>Here you can use rows and columns here to organize your footer content.</p>*@
-                    <ul>
-                        <!--Facebook-->
-                        <button type="button" class="btn btn-fb"><i class="fa fa-facebook left"></i> </button>
-                        <!--Twitter-->
-                        <button type="button" class="btn btn-tw"><i class="fa fa-twitter left"></i> </button>
-                        <!--Google +-->
-                        <button type="button" class="btn btn-gplus"><i class="fa fa-google-plus left"></i></button>
-                        @*<!--Linkedin-->
-                        <button type="button" class="btn btn-li"><i class="fa fa-linkedin left"></i> Linkedin</button>
-                        <!--Instagram-->
-                        <button type="button" class="btn btn-ins"><i class="fa fa-instagram left"></i> Instagram</button>
-                        <!--Pinterest-->
-                        <button type="button" class="btn btn-pin"><i class="fa fa-pinterest left"></i> Pinterest</button>
-                        <!--Youtube-->
-                        <button type="button" class="btn btn-yt"><i class="fa fa-youtube left"></i> Youtube</button>
-                        <!--Vkontakte-->
-                        <button type="button" class="btn btn-vk"><i class="fa fa-vk left"></i> Vkontakte</button>*@
-                        <!--Github-->
-                        <button type="button" class="btn btn-git"><i class="fa fa-github left"></i> </button>
-                        @*<!--Comments-->
-                        <button type="button" class="btn btn-comm"><i class="fa fa-comments left"></i> Comments</button>*@
-                        <!--Email-->
-                        <button type="button" class="btn btn-email"><i class="fa fa-envelope left"></i> </button>
-                    </ul>
-                </div>
-                <!--/.Second column-->
             </div>
         </div>
-        <!--/.Footer Links-->
-        <!--Copyright-->
-        <div class="footer-copyright">
-            <div class="container-fluid">
-                © @DateTime.Now.Year Copyright: <a href="#"> www.lubcycle.pl </a>
-
-            </div>
-        </div>
-        <!--/.Copyright-->
-
-    </footer>
-    <!--/.Footer-->
+    </section>
 
     <!-- SCRIPTS -->
     <!-- JQuery -->
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"
             asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
             asp-fallback-test="window.jQuery"></script>
-    @*<script type="text/javascript" src="js/jquery-2.2.3.min.js"></script>*@
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+            asp-fallback-src="~/lib/bootstrap-alpha/bootstrap.min.js"
+            asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/scrollReveal.js/3.1.4/scrollreveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FitText.js/1.2.0/jquery.fittext.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="~/js/creative.min.js"></script>
 
     <!-- Bootstrap tooltips -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.3.2/js/tether.min.js"
-        asp-fallback-src="~/lib/tether/dist/js/tether.min.js"></script>
-    @*<script type="text/javascript" src="js/tether.min.js"></script>*@
+            asp-fallback-src="~/lib/tether/dist/js/tether.min.js"></script>
 
-    <!-- Bootstrap core JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js"
-            asp-fallback-src="~/lib/bootstrap-alpha/bootstrap.min.js"
-            asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"></script>
-    @*<script type="text/javascript" src="js/bootstrap.min.js"></script>*@
-
-    <!-- MDB core JavaScript -->
-    <script type="text/javascript" src="~/lib/mdb/mdb.min.js"></script>
-    @*<script type="text/javascript" src="js/mdb.min.js"></script>*@
+    <script>
+        // Only enable if the document has a long scroll bar
+        // Note the window height + offset
+        if (($(window).height() + 100) < $(document).height()) {
+            $('#top-link-block').removeClass('hidden').affix({
+                // how far to scroll down before link "slides" into view
+                offset: { top: 100 }
+            });
+        }
+    </script>
 </body>
 </html>
