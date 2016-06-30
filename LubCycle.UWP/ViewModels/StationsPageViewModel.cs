@@ -249,10 +249,21 @@ namespace LubCycle.UWP.ViewModels
         }
         public async void PositionButton_OnClick(object sender, RoutedEventArgs e)
         {
-            if (CacheData.Position != null)
+            try
             {
                 SetButtonsEnabled(false);
-                await MapControl.TrySetViewAsync(CacheData.Position.Coordinate.Point, StaticData.DefaultMapZoom);
+                var pos = await LocationHelper.GetCurrentLocationAsync();
+                if (pos != null)
+                {
+                    await MapControl.TrySetViewAsync(pos.Coordinate.Point, StaticData.DefaultMapZoom);
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+            finally
+            {
                 SetButtonsEnabled(true);
             }
         }

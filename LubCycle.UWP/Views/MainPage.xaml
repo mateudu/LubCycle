@@ -7,21 +7,26 @@
       xmlns:controls="using:Template10.Controls"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="using:LubCycle.UWP.Views"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:vm="using:LubCycle.UWP.ViewModels"
       xmlns:maps="using:Windows.UI.Xaml.Controls.Maps"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:models="using:LubCycle.UWP.Models"
+      xmlns:vm="using:LubCycle.UWP.ViewModels"
       mc:Ignorable="d">
 
     <Page.DataContext>
-        <vm:MainPageViewModel x:Name="ViewModel" />
+        <vm:MainPageViewModel x:Name="ViewModel"/>
     </Page.DataContext>
-    
+
+    <Page.Resources>
+        
+    </Page.Resources>
+
     <!--<RelativePanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">-->
     <RelativePanel>
         <RelativePanel.Background>
-            <ImageBrush ImageSource="../Assets/lublin_landing.jpg"
-                        Opacity="0.4" Stretch="UniformToFill"/>
+            <ImageBrush ImageSource="../Assets/lublin_landing_dark.jpg"
+                        Opacity="0.8"
+                        Stretch="UniformToFill" />
         </RelativePanel.Background>
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="AdaptiveVisualStateGroup">
@@ -55,14 +60,16 @@
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
 
-        <controls:PageHeader x:Name="pageHeader" RelativePanel.AlignLeftWithPanel="True"
+        <controls:PageHeader x:Name="pageHeader"
+                             RelativePanel.AlignLeftWithPanel="True"
                              RelativePanel.AlignRightWithPanel="True"
-                             RelativePanel.AlignTopWithPanel="True" Text="Start">
+                             RelativePanel.AlignTopWithPanel="True"
+                             Text="Start">
 
             <controls:PageHeader.PrimaryCommands>
-                <AppBarButton Icon="Globe" Label="swiat"/>
+                <AppBarButton Icon="Globe" Label="WWW" Click="{x:Bind ViewModel.GotoAppWebsite}"/>
             </controls:PageHeader.PrimaryCommands>
-            
+
             <!--  secondary commands  -->
             <controls:PageHeader.SecondaryCommands>
                 <!--<AppBarButton Click="{x:Bind ViewModel.GotoSettings}" Label="Ustawienia" />-->
@@ -71,14 +78,43 @@
             </controls:PageHeader.SecondaryCommands>
 
         </controls:PageHeader>
-        <Grid RelativePanel.Below="pageHeader"
+        <Grid RelativePanel.AlignBottomWithPanel="True"
               RelativePanel.AlignLeftWithPanel="True"
               RelativePanel.AlignRightWithPanel="True"
-              RelativePanel.AlignBottomWithPanel="True">
+              RelativePanel.Below="pageHeader">
             <Grid.RowDefinitions>
+                <RowDefinition Height="2*" />
                 <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Bottom"
+                        Padding="5">
+                <Image MaxHeight="300" Source="../Assets/logo.png" />
+                <TextBlock x:Uid="MainPageLandingTextBox"
+                           FontFamily="ms-appx:/Assets/Fonts/BebasNeue Bold.ttf#Bebas Neue"
+                           FontSize="45"
+                           Foreground="{StaticResource ContrastColorBrush}"
+                           Padding="5"
+                           TextWrapping="WrapWholeWords">
+                    Lubelska nawigacja rowerowa
+                </TextBlock>
+            </StackPanel>
+            <StackPanel Grid.Row="1"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Center">
+
+                <Button x:Uid="MainPageGotoStationsButton"
+                        Margin="5"
+                        FontSize="20"
+                        HorizontalAlignment="Stretch"
+                        Background="{StaticResource CustomColorBrush}"
+                        Foreground="{StaticResource ContrastColorBrush}"
+                        Style="{StaticResource CornerButton}"
+                        Click="{x:Bind ViewModel.GotoStationsPage}">
+                    W drogê
+                </Button>
+            </StackPanel>
         </Grid>
     </RelativePanel>
 </Page>

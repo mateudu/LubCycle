@@ -37,8 +37,10 @@
                         <AdaptiveTrigger MinWindowWidth="{StaticResource NarrowMinWidth}" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        --><!--  TODO: change properties for narrow view  -->
-                        <!--<Setter Target="stateTextBox.Text" Value="Narrow Visual State" />--><!--
+        -->
+        <!--  TODO: change properties for narrow view  -->
+        <!--<Setter Target="stateTextBox.Text" Value="Narrow Visual State" />-->
+        <!--
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="VisualStateNormal">
@@ -46,8 +48,10 @@
                         <AdaptiveTrigger MinWindowWidth="{StaticResource NormalMinWidth}" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        --><!--  TODO: change properties for normal view  -->
-                        <!--<Setter Target="stateTextBox.Text" Value="Normal Visual State" />--><!--
+        -->
+        <!--  TODO: change properties for normal view  -->
+        <!--<Setter Target="stateTextBox.Text" Value="Normal Visual State" />-->
+        <!--
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="VisualStateWide">
@@ -55,8 +59,10 @@
                         <AdaptiveTrigger MinWindowWidth="{StaticResource WideMinWidth}" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        --><!--  TODO: change properties for wide view  -->
-                        <!--<Setter Target="stateTextBox.Text" Value="Wide Visual State" />--><!--
+        -->
+        <!--  TODO: change properties for wide view  -->
+        <!--<Setter Target="stateTextBox.Text" Value="Wide Visual State" />-->
+        <!--
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
@@ -92,6 +98,7 @@
                             <StackPanel MinWidth="250">
                                 <AutoSuggestBox x:Uid="MainPage_AddressTB"
                                                 HorizontalAlignment="Stretch"
+                                                FontSize="20"
                                                 PlaceholderText="Wpisz szukany adres"
                                                 SuggestionChosen="{x:Bind ViewModel.AddressSearchASB_SuggestionChosen, Mode=OneWay}"
                                                 Text="{x:Bind ViewModel.AddressSearch, Mode=TwoWay}"
@@ -101,6 +108,8 @@
                                         Background="{StaticResource CustomColorBrush}"
                                         Click="{x:Bind ViewModel.SearchButton_OnClick, Mode=OneWay}"
                                         Content="Szukaj"
+                                        FontSize="20"
+                                        Style="{StaticResource CornerButton}"
                                         Foreground="{StaticResource ContrastColorBrush}"
                                         IsEnabled="{x:Bind ViewModel.SearchButtonEnabled, Mode=OneWay}"
                                         Opacity="1.0" />
@@ -200,9 +209,11 @@
                 </Grid>
                 <!--  /DEST STATION  -->
                 <Button HorizontalAlignment="Stretch"
+                        FontSize="20"
                         Background="{StaticResource CustomColorBrush}"
-                        Content="Nawiguj"
                         Click="{x:Bind ViewModel.StartNavigationButton_OnClick, Mode=OneWay}"
+                        Content="Nawiguj"
+                        Style="{StaticResource CornerButton}"
                         Foreground="{StaticResource ContrastColorBrush}"
                         IsEnabled="{x:Bind ViewModel.StartNavigationButtonEnabled, Mode=TwoWay}" />
             </StackPanel>

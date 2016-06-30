@@ -15,29 +15,33 @@
 
         <Controls:HamburgerMenu.PrimaryButtons>
             <!--  mainpage button  -->
-            <Controls:HamburgerButtonInfo ClearHistory="True" PageType="views:MainPage" 
-                                          AutomationProperties.Name="Jerry">
+            <Controls:HamburgerButtonInfo AutomationProperties.Name="Jerry"
+                                          ClearHistory="True"
+                                          PageType="views:MainPage">
                 <Controls:HamburgerButtonInfo.NavigationTransitionInfo>
                     <SuppressNavigationTransitionInfo />
                 </Controls:HamburgerButtonInfo.NavigationTransitionInfo>
                 <StackPanel Orientation="Horizontal">
-                    <SymbolIcon Width="48" Height="48"
+                    <SymbolIcon Width="48"
+                                Height="48"
                                 Symbol="Home" />
-                    <TextBlock Margin="12,0,0,0" VerticalAlignment="Center"
+                    <TextBlock Margin="12,0,0,0"
+                               VerticalAlignment="Center"
                                Text="Start" />
                 </StackPanel>
             </Controls:HamburgerButtonInfo>
 
-            <!--stationsbutton-->
-            <Controls:HamburgerButtonInfo PageType="views:StationsPage" 
-                                          AutomationProperties.Name="Jerry">
+            <!--  stationsbutton  -->
+            <Controls:HamburgerButtonInfo AutomationProperties.Name="Jerry" PageType="views:StationsPage">
                 <Controls:HamburgerButtonInfo.NavigationTransitionInfo>
                     <SuppressNavigationTransitionInfo />
                 </Controls:HamburgerButtonInfo.NavigationTransitionInfo>
                 <StackPanel Orientation="Horizontal">
-                    <SymbolIcon Width="48" Height="48"
+                    <SymbolIcon Width="48"
+                                Height="48"
                                 Symbol="Globe" />
-                    <TextBlock Margin="12,0,0,0" VerticalAlignment="Center"
+                    <TextBlock Margin="12,0,0,0"
+                               VerticalAlignment="Center"
                                Text="Stacje" />
                 </StackPanel>
             </Controls:HamburgerButtonInfo>
@@ -45,15 +49,18 @@
 
         <Controls:HamburgerMenu.SecondaryButtons>
             <!--  settingspage button  -->
-            <Controls:HamburgerButtonInfo x:Name="SettingsButton" PageParameter="0"
+            <Controls:HamburgerButtonInfo x:Name="SettingsButton"
+                                          PageParameter="0"
                                           PageType="views:SettingsPage">
                 <Controls:HamburgerButtonInfo.NavigationTransitionInfo>
                     <SuppressNavigationTransitionInfo />
                 </Controls:HamburgerButtonInfo.NavigationTransitionInfo>
                 <StackPanel Orientation="Horizontal">
-                    <SymbolIcon Width="48" Height="48"
+                    <SymbolIcon Width="48"
+                                Height="48"
                                 Symbol="Setting" />
-                    <TextBlock Margin="12,0,0,0" VerticalAlignment="Center"
+                    <TextBlock Margin="12,0,0,0"
+                               VerticalAlignment="Center"
                                Text="Ustawienia" />
                 </StackPanel>
             </Controls:HamburgerButtonInfo>

@@ -142,12 +142,16 @@ namespace LubCycle.UWP.ViewModels
             }
             
         }
-        public void RemoveSLVI_OnClick(object sender, RoutedEventArgs e)
+        public async void RemoveSLVI_OnClick(object sender, RoutedEventArgs e)
         {
             if ((sender as Button)?.Tag is StationsListViewItem)
             {
                 var obj = (sender as Button).Tag as StationsListViewItem;
                 MapItemsSource.Remove(obj);
+            }
+            if (MapItemsSource.Count >= 1)
+            {
+                await MapControl.TrySetViewAsync(MapItemsSource[0].Geopoint, StaticData.DefaultMapZoom);
             }
         }
 

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.Storage.Pickers;
+using Windows.System;
 using Windows.UI.Notifications;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
@@ -18,6 +19,7 @@ using Template10.Services.NavigationService;
 using Windows.UI.Xaml.Navigation;
 using LubCycle.UWP.Helpers;
 using LubCycle.UWP.Models;
+using LubCycle.UWP.Views;
 using Template10.Utils;
 
 namespace LubCycle.UWP.ViewModels
@@ -59,6 +61,14 @@ namespace LubCycle.UWP.ViewModels
         {
             args.Cancel = false;
             await Task.CompletedTask;
+        }
+
+        public async Task GotoAppWebsite() =>
+            await Launcher.LaunchUriAsync(new Uri(StaticData.AppUrl));
+
+        public void GotoStationsPage()
+        {
+            NavigationService.Navigate(typeof(StationsPage), null, new SuppressNavigationTransitionInfo());
         }
     }
 }
