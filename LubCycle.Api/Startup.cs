@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -185,7 +186,7 @@ namespace LubCycle.Api
 
         private string GetXmlCommentsPath()
         {
-            string s = String.Format(@"{0}\LubCycle.Api.xml", System.AppContext.BaseDirectory);
+            string s = Path.Combine(System.AppContext.BaseDirectory, @"LubCycle.Api.xml");
             return s;
         }
     }
