@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json.Serialization;
+using Swashbuckle.Swagger.Model;
 using Swashbuckle.SwaggerGen.Generator;
 
 namespace LubCycle.Api
@@ -116,21 +117,22 @@ namespace LubCycle.Api
                                 out buffer) ? buffer : 7000.0
                         }));
 
-            //// Inject an implementation of ISwaggerProvider with defaulted settings applied
-            //services.AddSwaggerGen();
-            //services.ConfigureSwaggerGen(options =>
-            //{
-            //    options.SingleApiVersion(new Info()
-            //    {
-            //        Contact = new Contact()
-            //        {
-            //            Name = "LubCycle",
-            //            Email = "kontakt@lubcycle.pl"
-            //        },
-            //        Version = "v1",
-            //        Title = "LubCycle"
-            //    });
-            //});
+            // Inject an implementation of ISwaggerProvider with defaulted settings applied
+            services.AddSwaggerGen();
+            services.ConfigureSwaggerGen(options =>
+            {
+                options.SingleApiVersion(new Info()
+                {
+                    Contact = new Contact()
+                    {
+                        Name = "LubCycle",
+                        Email = "kontakt@lubcycle.pl"
+                    },
+                    Version = "v1",
+                    Title = "LubCycle"
+                });
+                options.IncludeXmlComments(GetXmlCommentsPath());
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -175,9 +177,16 @@ namespace LubCycle.Api
 
             //// Enable middleware to serve generated Swagger as a JSON endpoint
             //app.UseSwaggerGen();
+            app.UseSwagger();
 
             //// Enable middleware to serve swagger-ui assets (HTML, JS, CSS etc.)
-            //app.UseSwaggerUi();
+            app.UseSwaggerUi();
+        }
+
+        private string GetXmlCommentsPath()
+        {
+            string s = String.Format(@"{0}\LubCycle.Api.xml", System.AppContext.BaseDirectory);
+            return s;
         }
     }
 }

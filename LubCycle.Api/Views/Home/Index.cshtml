@@ -1,14 +1,15 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Start";
 }
 
-<header>
+<header class="landing-header">
     <div class="header-content">
         <div class="header-content-inner">
             <h1>Lubelska nawigacja rowerowa</h1>
+            <h1><i class="fa fa-bicycle" aria-hidden="true"></i></h1>
             <hr>
 
-            <a class="btn btn-primary btn-xl page-scroll">W drogę!</a>
+            <a class="btn btn-primary btn-xl page-scroll" asp-controller="Navi" asp-action="Index">W drogę!</a>
         </div>
     </div>
 </header>
@@ -55,7 +56,7 @@
                 <div class="service-box">
                     <i class="fa fa-4x fa-newspaper-o text-primary sr-icons"></i>
                     <h3>Aktualność</h3>
-                    <p class="text-muted">Zawsze aktualne informacje.</p>
+                    <p class="text-muted">Zawsze aktualne dane.</p>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 text-center">

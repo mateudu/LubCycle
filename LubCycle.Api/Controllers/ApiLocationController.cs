@@ -22,6 +22,13 @@ namespace LubCycle.Api.Controllers
             _mapsHelper = mapsHelper;
         }
 
+        /// <summary>
+        /// Returns geo-coordinates of requested query.
+        /// </summary>
+        /// <param name="query">Location query string</param>
+        /// <remarks>Returns geo-coordinates of requested query.</remarks>
+        /// <response code="400">Bad request</response>
+        /// <response code="500">Internal Server Error</response>
         [HttpGet("query/{query}")]
         [ProducesResponseType(typeof(LocationResponse),(int)HttpStatusCode.OK)]
         [ResponseCache(CacheProfileName = "AddressCaching")]

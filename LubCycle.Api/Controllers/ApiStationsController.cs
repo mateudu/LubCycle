@@ -19,6 +19,13 @@ namespace LubCycle.Api.Controllers
             this._nextBikeHelper = nextBikeHelper;
         }
 
+        /// <summary>
+        /// Returns station.
+        /// </summary>
+        /// <param name="number">Station number</param>
+        /// <remarks>Returns station</remarks>
+        /// <response code="400">Bad request</response>
+        /// <response code="500">Internal Server Error</response>
         [HttpGet("station-number/{number}")]
         [ProducesResponseType(typeof(Place), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetStationByStationNumberAsync(int number)
@@ -34,6 +41,12 @@ namespace LubCycle.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Returns all stations.
+        /// </summary>
+        /// <remarks>Returns all stations</remarks>
+        /// <response code="400">Bad request</response>
+        /// <response code="500">Internal Server Error</response>
         [HttpGet("station-uid/{number}")]
         [ProducesResponseType(typeof(Place), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetStationByStationUidAsync(string number)

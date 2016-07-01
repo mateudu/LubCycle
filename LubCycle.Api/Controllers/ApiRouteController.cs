@@ -21,6 +21,15 @@ namespace LubCycle.Api.Controllers
             _navHelper = navHelper;
         }
 
+
+        /// <summary>
+        /// Returns route.
+        /// </summary>
+        /// <param name="startNumber">Start station number</param>
+        /// <param name="destNumer">End station number</param>
+        /// <remarks>Returns route between requested stations.</remarks>
+        /// <response code="400">Bad request</response>
+        /// <response code="500">Internal Server Error</response>
         [HttpGet("station-number/{startNumber}/{destNumer}")]
         [ProducesResponseType(typeof(Core.Models.Navigation.Route), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetRouteByStationNumberAsync(string startNumber, string destNumer)
@@ -33,6 +42,14 @@ namespace LubCycle.Api.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Returns route.
+        /// </summary>
+        /// <param name="startUid">Start station Uid</param>
+        /// <param name="destUid">End station Uid</param>
+        /// <remarks>Returns route between requested stations.</remarks>
+        /// <response code="400">Bad request</response>
+        /// <response code="500">Internal Server Error</response>
         [HttpGet("station-uid/{startUid}/{destUid}")]
         [ProducesResponseType(typeof(Core.Models.Navigation.Route), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetRouteByStationUidAsync(string startUid, string destUid)
