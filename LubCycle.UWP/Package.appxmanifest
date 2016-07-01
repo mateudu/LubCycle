@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="34175mateudu.LubCycle" Publisher="CN=F396A3B4-9720-4EED-9937-5997D0EAC2F4" Version="2.0.0.0" />
+  <Identity Name="34175mateudu.LubCycle" Publisher="CN=F396A3B4-9720-4EED-9937-5997D0EAC2F4" Version="2.0.1.0" />
   <mp:PhoneIdentity PhoneProductId="bdd02b42-feb1-4c0f-8314-e67a8d0e0f8d" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>LubCycle</DisplayName>

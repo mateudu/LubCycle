@@ -87,7 +87,7 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0"
-                        HorizontalAlignment="Stretch"
+                        HorizontalAlignment="Center"
                         VerticalAlignment="Bottom"
                         Padding="5">
                 <Image MaxHeight="300" Source="../Assets/logo.png" />
@@ -107,6 +107,7 @@
                 <Button x:Uid="MainPageGotoStationsButton"
                         Margin="5"
                         FontSize="20"
+                        MaxWidth="500"
                         HorizontalAlignment="Stretch"
                         Background="{StaticResource CustomColorBrush}"
                         Foreground="{StaticResource ContrastColorBrush}"
