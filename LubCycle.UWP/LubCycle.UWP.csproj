@@ -231,12 +231,6 @@
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\LubCycle.Core.Mobile\LubCycle.Core.Mobile.csproj">
-      <Project>{47ba438b-f331-4f58-b403-96e211dc7558}</Project>
-      <Name>LubCycle.Core.Mobile</Name>
-    </ProjectReference>
-  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
