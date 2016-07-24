@@ -1,5 +1,6 @@
 ﻿using Windows.Devices.Geolocation;
 using Windows.Foundation;
+using LubCycle.Core.Mobile.Models;
 
 namespace LubCycle.UWP.Models
 {

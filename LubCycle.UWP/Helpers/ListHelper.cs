@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
 using Windows.UI.Popups;
 using LubCycle.UWP.Models;
+using LubCycle.Core.Mobile.Helpers;
 using Template10.Utils;
 
 namespace LubCycle.UWP.Helpers

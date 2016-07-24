@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Net.Http;
 using System.Threading.Tasks;
 using LubCycle.Core.Helpers;
-using LubCycle.Core.Models.GoogleMaps.DistanceMatrix;
+using LubCycle.Core.Api.Models.GoogleMaps.DistanceMatrix;
 
 namespace LubCycle.DbSeed
 {

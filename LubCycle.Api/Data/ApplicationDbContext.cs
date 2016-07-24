@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using LubCycle.Api.Models;
-using LubCycle.Core.Models;
+using LubCycle.Core.Api.Models;
 
 namespace LubCycle.Api.Data
 {

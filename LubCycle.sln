@@ -5,11 +5,13 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "LubCycle.Api", "LubCycle.Api\LubCycle.Api.xproj", "{076F195A-0024-4DD2-8463-D58560FFE472}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "LubCycle.Core", "LubCycle.Core\LubCycle.Core.xproj", "{984C4DF4-C787-411F-8E78-D57BBB81CAF5}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "LubCycle.Core.Api", "LubCycle.Core.Api\LubCycle.Core.Api.xproj", "{984C4DF4-C787-411F-8E78-D57BBB81CAF5}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "LubCycle.DbSeed", "LubCycle.DbSeed\LubCycle.DbSeed.xproj", "{68D57813-16C0-44C1-B1FD-8F8E832904C0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LubCycle.UWP", "LubCycle.UWP\LubCycle.UWP.csproj", "{45E1164A-3AD1-4093-A01F-925A437F6973}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LubCycle.Core.Mobile", "LubCycle.Core.Mobile\LubCycle.Core.Mobile.csproj", "{425944E7-F4B1-4E19-8EB1-6AA92A236F22}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -72,6 +74,8 @@ Global
 		{68D57813-16C0-44C1-B1FD-8F8E832904C0}.Release|x86.ActiveCfg = Release|Any CPU
 		{68D57813-16C0-44C1-B1FD-8F8E832904C0}.Release|x86.Build.0 = Release|Any CPU
 		{45E1164A-3AD1-4093-A01F-925A437F6973}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{45E1164A-3AD1-4093-A01F-925A437F6973}.Debug|Any CPU.Build.0 = Debug|x86
+		{45E1164A-3AD1-4093-A01F-925A437F6973}.Debug|Any CPU.Deploy.0 = Debug|x86
 		{45E1164A-3AD1-4093-A01F-925A437F6973}.Debug|ARM.ActiveCfg = Debug|ARM
 		{45E1164A-3AD1-4093-A01F-925A437F6973}.Debug|ARM.Build.0 = Debug|ARM
 		{45E1164A-3AD1-4093-A01F-925A437F6973}.Debug|ARM.Deploy.0 = Debug|ARM
@@ -91,6 +95,22 @@ Global
 		{45E1164A-3AD1-4093-A01F-925A437F6973}.Release|x86.ActiveCfg = Release|x86
 		{45E1164A-3AD1-4093-A01F-925A437F6973}.Release|x86.Build.0 = Release|x86
 		{45E1164A-3AD1-4093-A01F-925A437F6973}.Release|x86.Deploy.0 = Release|x86
+		{425944E7-F4B1-4E19-8EB1-6AA92A236F22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{425944E7-F4B1-4E19-8EB1-6AA92A236F22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{425944E7-F4B1-4E19-8EB1-6AA92A236F22}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{425944E7-F4B1-4E19-8EB1-6AA92A236F22}.Debug|ARM.Build.0 = Debug|Any CPU
+		{425944E7-F4B1-4E19-8EB1-6AA92A236F22}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{425944E7-F4B1-4E19-8EB1-6AA92A236F22}.Debug|x64.Build.0 = Debug|Any CPU
+		{425944E7-F4B1-4E19-8EB1-6AA92A236F22}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{425944E7-F4B1-4E19-8EB1-6AA92A236F22}.Debug|x86.Build.0 = Debug|Any CPU
+		{425944E7-F4B1-4E19-8EB1-6AA92A236F22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{425944E7-F4B1-4E19-8EB1-6AA92A236F22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{425944E7-F4B1-4E19-8EB1-6AA92A236F22}.Release|ARM.ActiveCfg = Release|Any CPU
+		{425944E7-F4B1-4E19-8EB1-6AA92A236F22}.Release|ARM.Build.0 = Release|Any CPU
+		{425944E7-F4B1-4E19-8EB1-6AA92A236F22}.Release|x64.ActiveCfg = Release|Any CPU
+		{425944E7-F4B1-4E19-8EB1-6AA92A236F22}.Release|x64.Build.0 = Release|Any CPU
+		{425944E7-F4B1-4E19-8EB1-6AA92A236F22}.Release|x86.ActiveCfg = Release|Any CPU
+		{425944E7-F4B1-4E19-8EB1-6AA92A236F22}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

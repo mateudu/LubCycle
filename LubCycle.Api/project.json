@@ -22,7 +22,6 @@
     "Microsoft.Extensions.Logging.Console": "1.0.0",
     "Microsoft.Extensions.Logging.Debug": "1.0.0",
     "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0",
-    "LubCycle.Core": "1.0.0-*",
     "Microsoft.AspNetCore.Http": "1.0.0",
     "Microsoft.AspNetCore.Http.Extensions": "1.0.0",
     "Microsoft.AspNetCore.Mvc.Core": "1.0.0",
@@ -40,7 +39,9 @@
     "Microsoft.VisualStudio.Web.CodeGenerators.Mvc": "1.0.0-preview2-final",
     "Newtonsoft.Json": "9.0.1",
     "System.Text.Encoding.CodePages": "4.0.1",
-    "Swashbuckle": "6.0.0-beta901" },
+    "Swashbuckle": "6.0.0-beta901",
+    "LubCycle.Core.Api": "1.0.0-*"
+    },
 
   "tools": {
     "Microsoft.AspNetCore.Server.IISIntegration.Tools": {

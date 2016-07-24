@@ -15,7 +15,7 @@ using LubCycle.Api.Models;
 using LubCycle.Api.Services;
 using LubCycle.Core;
 using LubCycle.Core.Helpers;
-using LubCycle.Core.Models.Navigation;
+using LubCycle.Core.Api.Models.Navigation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;

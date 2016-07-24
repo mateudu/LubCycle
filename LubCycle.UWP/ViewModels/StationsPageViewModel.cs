@@ -14,6 +14,8 @@ using Windows.UI.Xaml.Controls.Maps;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
+using LubCycle.Core.Mobile.Helpers;
+using LubCycle.Core.Mobile.Models;
 using LubCycle.UWP.Helpers;
 using LubCycle.UWP.Models;
 using LubCycle.UWP.Views;

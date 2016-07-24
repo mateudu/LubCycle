@@ -13,6 +13,6 @@ namespace LubCycle.DbSeed
             optionsBuilder.UseSqlServer(Program.AppDatabaseConnectionString);
         }
         
-        public DbSet<LubCycle.Core.Models.TravelDuration> TravelDurations { get; set; }
+        public DbSet<LubCycle.Core.Api.Models.TravelDuration> TravelDurations { get; set; }
     }
 }

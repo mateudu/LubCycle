@@ -1,6 +1,6 @@
 using LubCycle.Api.Data;
 using LubCycle.Core.Helpers;
-using LubCycle.Core.Models.Navigation;
+using LubCycle.Core.Api.Models.Navigation;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Threading.Tasks;
@@ -31,7 +31,7 @@ namespace LubCycle.Api.Controllers
         /// <response code="400">Bad request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet("station-number/{startNumber}/{destNumer}")]
-        [ProducesResponseType(typeof(Core.Models.Navigation.Route), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Core.Api.Models.Navigation.Route), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetRouteByStationNumberAsync(string startNumber, string destNumer)
         {
             _navHelper.UpdateStations(await _nextBikeHelper.GetStationsAsync());
@@ -51,7 +51,7 @@ namespace LubCycle.Api.Controllers
         /// <response code="400">Bad request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet("station-uid/{startUid}/{destUid}")]
-        [ProducesResponseType(typeof(Core.Models.Navigation.Route), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Core.Api.Models.Navigation.Route), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetRouteByStationUidAsync(string startUid, string destUid)
         {
             _navHelper.UpdateStations(await _nextBikeHelper.GetStationsAsync());

@@ -1,4 +1,4 @@
-using LubCycle.Core.Models.NextBike;
+using LubCycle.Core.Api.Models.NextBike;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;

@@ -5,7 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using LubCycle.Core.Helpers;
-using LubCycle.Core.Models.IMapHelper;
+using LubCycle.Core.Api.Models.IMapHelper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

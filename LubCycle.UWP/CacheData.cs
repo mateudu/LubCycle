@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
 using Windows.UI;
+using LubCycle.Core.Mobile.Models;
 using LubCycle.UWP.Models;
 
 namespace LubCycle.UWP
