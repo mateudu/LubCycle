@@ -132,7 +132,7 @@ namespace LubCycle.Api
                     Version = "v1",
                     Title = "LubCycle"
                 });
-                options.IncludeXmlComments(GetXmlCommentsPath());
+                //options.IncludeXmlComments(GetXmlCommentsPath());
             });
         }
 

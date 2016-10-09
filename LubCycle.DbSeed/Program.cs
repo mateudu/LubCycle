@@ -3,6 +3,7 @@ using System;
 using System.Globalization;
 using System.Net.Http;
 using System.Threading.Tasks;
+using LubCycle.Core.Api.Models;
 using LubCycle.Core.Helpers;
 using LubCycle.Core.Api.Models.GoogleMaps.DistanceMatrix;
 
@@ -29,78 +30,75 @@ namespace LubCycle.DbSeed
                 .Build();
             ConfigureSettings();
 
-            //Task.Run(async () =>
-            //{
-            //    try
-            //    {
-            //        var nextBike = new Core.Helpers.NextBikeHelper(CityUids);
-            //        var places = await nextBike.GetStationsAsync();
-            //        IMapsHelper mapsHelper = new GoogleMapsHelper(GoogleMapsApiKey);
-            //        var db = new AppDatabase();
-            //        int counter = 0;
+            Task.Run(async () =>
+            {
+                try
+                {
+                    var nextBike = new Core.Helpers.NextBikeHelper(CityUids);
+                    var places = await nextBike.GetStationsAsync();
+                    IMapsHelper mapsHelper = new GoogleMapsHelper(GoogleMapsApiKey);
+                    var db = new AppDatabase();
+                    int counter = 0;
 
-            //        var client = new HttpClient();
-            //        var obj = new Element();
-            //        for (int i = 0; i < places.Count; i++)
-            //        {
-            //            for (int j = i + 1; j < places.Count; j++)
-            //            {
-            //                if (Core.Helpers.GeoHelper.CalcDistanceInMeters(
-            //                    places[i].Lat,
-            //                    places[i].Lng,
-            //                    places[j].Lat,
-            //                    places[j].Lng) <= MaxSingleDistance)
-            //                {
-            //                    var dr = await mapsHelper.GetDistanceResponseAsync(
-            //                    places[i].Lat,
-            //                    places[i].Lng,
-            //                    places[j].Lat,
-            //                    places[j].Lng);
-            //                    if (dr.Distance.HasValue && dr.Duration.HasValue)
-            //                    {
-            //                        if (dr.Distance.Value <= MaxSingleDistance &&
-            //                            dr.Duration.Value <= MaxSingleDuration)
-            //                        {
-            //                            Console.WriteLine($"{i}:{j} {places[i].Name}<=>{places[j].Name}, {counter++}");
-                                        
-            //                            // UNCOMMENT THESE LINES BELOW
-                                        
-            //                            //db.TravelDurations.Add(new TravelDuration()
-            //                            //{
-            //                            //    Distance = dr.Distance.Value,
-            //                            //    Duration = dr.Duration.Value,
-            //                            //    Station1Uid = places[i].Uid,
-            //                            //    Station2Uid = places[j].Uid
-            //                            //});
-            //                            if (counter % 50 == 0)
-            //                            {
-            //                                //Save every 50 entities.
+                    var client = new HttpClient();
+                    var obj = new Element();
+                    for (int i = 0; i < places.Count; i++)
+                    {
+                        for (int j = i + 1; j < places.Count; j++)
+                        {
+                            if (Core.Helpers.GeoHelper.CalcDistanceInMeters(
+                                places[i].Lat,
+                                places[i].Lng,
+                                places[j].Lat,
+                                places[j].Lng) <= MaxSingleDistance)
+                            {
+                                var dr = await mapsHelper.GetDistanceResponseAsync(
+                                places[i].Lat,
+                                places[i].Lng,
+                                places[j].Lat,
+                                places[j].Lng);
+                                if (dr.Distance.HasValue && dr.Duration.HasValue)
+                                {
+                                    if (dr.Distance.Value <= MaxSingleDistance &&
+                                        dr.Duration.Value <= MaxSingleDuration)
+                                    {
+                                        Console.WriteLine($"{i}:{j} {places[i].Name}<=>{places[j].Name}, {counter++}");
 
-            //                                // UNCOMMENT THESE LINES BELOW
+                                        // UNCOMMENT THESE LINES BELOW
 
-            //                                //await db.SaveChangesAsync();
-            //                                //Console.WriteLine("================= SAVED " + counter + " ==================");
-            //                            }
-            //                        }
-            //                    }
-            //                }
-            //            }
-            //        }
-            //        Console.WriteLine($"SAVED {counter} ENTITIES.");
+                                        //db.TravelDurations.Add(new TravelDuration()
+                                        //{
+                                        //    Distance = dr.Distance.Value,
+                                        //    Duration = dr.Duration.Value,
+                                        //    Station1Uid = places[i].Uid,
+                                        //    Station2Uid = places[j].Uid
+                                        //});
+                                        if (counter % 50 == 0)
+                                        {
+                                            //Save every 50 entities.
 
-            //        // UNCOMMENT THESE LINES BELOW
+                                            // UNCOMMENT THESE LINES BELOW
 
-            //        //await db.SaveChangesAsync();
-            //    }
-            //    catch (Exception exc)
-            //    {
-            //        Console.WriteLine(exc.Message);
-            //    }
-            //});
+                                            //await db.SaveChangesAsync();
+                                            //Console.WriteLine("================= SAVED " + counter + " ==================");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    Console.WriteLine($"SAVED {counter} ENTITIES.");
 
-            IMapsHelper maps = new GoogleMapsHelper(GoogleMapsApiKey);
-            var result = maps.GetLocationResponseAsync(@"Lublin Jantarowa 5").Result;
-            Console.WriteLine($"{result.Status} {result.Lat} {result.Lng}");
+                    // UNCOMMENT THESE LINES BELOW
+
+                    //await db.SaveChangesAsync();
+                }
+                catch (Exception exc)
+                {
+                    Console.WriteLine(exc.Message);
+                }
+            });
+
             Console.ReadLine();
         }
 

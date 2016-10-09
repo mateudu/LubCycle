@@ -47,22 +47,24 @@ namespace LubCycle.Core.Helpers
                 {
                     if (t.Duration <= _maximalSingleDuration && t.Distance <= _maximalSingleDistance)
                     {
-                        var from = _edges[t.Station1Uid];
-                        var to = _edges[t.Station2Uid];
-                        var distance = t.Distance;
-                        var duration = t.Duration;
-                        _graph[from].Add(new Edge
+                        int from, to;
+                        if (_edges.TryGetValue(t.Station1Uid, out from) && _edges.TryGetValue(t.Station2Uid, out to))
                         {
-                            Distance = distance,
-                            Duration = duration,
-                            To = to
-                        });
-                        _graph[to].Add(new Edge
-                        {
-                            Distance = distance,
-                            Duration = duration,
-                            To = from
-                        });
+                            var distance = t.Distance;
+                            var duration = t.Duration;
+                            _graph[from].Add(new Edge
+                            {
+                                Distance = distance,
+                                Duration = duration,
+                                To = to
+                            });
+                            _graph[to].Add(new Edge
+                            {
+                                Distance = distance,
+                                Duration = duration,
+                                To = from
+                            });
+                        }
                     }
                 }
                 _isInitialized = true;

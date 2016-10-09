@@ -1,5 +1,5 @@
 {
-  "userSecretsId": "aspnet-LubCycle.Api-ed8cdc16-3d32-4440-997a-eff565ddd4b2",
+  "userSecretsId": "LubCycle",
 
   "dependencies": {
     "Microsoft.NETCore.App": {
@@ -41,7 +41,7 @@
     "System.Text.Encoding.CodePages": "4.0.1",
     "Swashbuckle": "6.0.0-beta901",
     "LubCycle.Core.Api": "1.0.0-*"
-    },
+  },
 
   "tools": {
     "Microsoft.AspNetCore.Server.IISIntegration.Tools": {
